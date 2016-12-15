@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>BubbleView</title>
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-material-design.min.css">
+<link rel="stylesheet" type="text/css" href="css/ripples.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+  body {
+    padding-top: 70px;
+  }
+</style>
+
+</head>
+<body>
+  <div class="navbar navbar-info navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          <span><img alt="Brand" src="img/logo.png" width="30"></span>
+           &nbsp;BubbleView
+        </a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="#demo">Demo</a></li>
+          <li><a href="#code">Code</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+<div class="container-fluid">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <h2>BubbleView: replacing eye-tracking to crowdsource image importance</h2>
+      <br>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-4 col-sm-2 col-md-1 text-center">
+            <img class="img-circle img-responsive center-block" src="img/people/nam2.png">
+            NamWook <br>Kim*
+          </div>
+          <div class="col-xs-4 col-sm-2 col-md-1 text-center">
+            <img class="img-circle img-responsive center-block" src="img/people/zoya2.png">
+            Zoya <br>Bylinskii*
+          </div>
+          <div class="col-xs-4 col-sm-2 col-md-1 text-center">
+            <img class="img-circle img-responsive center-block" src="img/people/michelle2.png">
+            Michelle <br>Borkin
+          </div>
+          <div class="col-xs-4 col-sm-2 col-md-1 text-center">
+            <img class="img-circle img-responsive center-block" src="img/people/gajos2.png">
+            Krzysztof <br>Gajos
+          </div>
+          <div class="col-xs-4 col-sm-2 col-md-1 text-center">
+            <img class="img-circle img-responsive center-block" src="img/people/aude2.png">
+            Aude <br>Oliva
+          </div>
+          <div class="col-xs-4 col-sm-2 col-md-1 text-center">
+            <img class="img-circle img-responsive center-block" src="img/people/fredo2.png">
+            Fredo <br>Durand
+          </div>
+          <div class="col-xs-4 col-sm-2 col-md-1 text-center">
+            <img class="img-circle img-responsive center-block" src="img/people/hp2.png">
+            Hanspeter <br>Pfister
+          </div>
+        </div>
+      </div>
+
+      <br>
+      <p>We present BubbleView, an alternative methodology for tracking human visual attention using mouse clicks. Participants are presented with a series of blurred images and can click to reveal “bubbles” - small, circular areas of the image at normal resolution, similar to having a confined area of focus like the eye fovea. We evaluated the BubbleView methodology on a variety of image types: information visualizations, graphic designs, static webpages, and natural images, and compared the clicks collected to eye fixations collected in controlled lab settings. We found that BubbleView can be used to successfully approximate eye fixations on different images types, and analyzed the effect of experimental parameters including image blur, bubble sizes, task type, and viewing time. We also compared BubbleView to related methodologies for crowdsourcing mouse movements and explicit importance annotations. Our methodology can be used to collect image importance, as it is designed to measure which information people consciously choose to examine. We present our experimental tool which can be launched online to easily crowdsource the data collection of attention and importance on new images.</p>
+      <br>
+      <p>
+        Submitted to <em>ACM Transactions on Computer-Human Interaction (TOCHI)</em>
+        <br>
+        *Equal contribution
+      </p>
+      <a href="javascript:void(0)" class="btn btn-raised btn-default btn-sm">PDF</a>
+      <a href="javascript:void(0)" class="btn btn-raised btn-default btn-sm">Bibtex</a>
+      <br>
+    </div>
+  </div>
+  <div id="demo" class="panel panel-default">
+    <div class="panel-body">
+      <h2>Live Demo</h2>
+      <h4>BubbleView Interface: Click and Describe the Image</h4>
+      <em>Parameters</em>
+
+      <div class="row">
+          <div class="col-md-12">
+            <div id="canvas-area" style="display:inline-block;float:left;">
+              <canvas id="canvas" width="500" height="500" ></canvas>
+            </div>
+            <form id="description-area" role="form" style="display:inline-block;margin-left:20px;width:300px;">
+              <span class="badge"><span id="click-count">0</span> clicks</span>
+              <span class="badge"><span id="char-count">0</span> characters</span>
+              <div class="form-group" style="margin-top:0px;">
+                <textarea id="bubble-vis-desc" name="desc" class="form-control" rows="20" placeholder="Describe the image in as much detail as possible..."></textarea>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/material.min.js"></script>
+<script src="js/stackblur.js"></script>
+
+<script>
+  $(document).ready(function(){
+      $.material.init();
+      clickCount=0;
+      var curImg = new Image();
+      curImg.src = 'img/sample.png';
+      var canvas = document.getElementById('canvas');
+      curImg.onload = function() {
+
+        StackBlur.image(curImg, , 20, true);
+      }
+      SetupImage
+
+      // SetupImage('img/sample.png', 'img/sample_blurred.png', '#canvas' );
+      // $('#bubble-vis-desc').keyup(function() {
+      //     $('#char-count').text($('#bubble-vis-desc').val().length);
+      // })
+      //
+      //
+      // $("#bubble-vis-desc").focusin(function() {
+      //     console.log("in focus");
+      //     originalDesc = $("#bubble-vis-desc").val();
+      //     //$("#msg").text($("#textbox").val());
+      // });
+      //
+      // $("#bubble-vis-desc").focusout(function() {
+      //     console.log("out focus");
+      //     updatedDesc = $("#bubble-vis-desc").val();
+      //
+      //     var diff = JsDiff.diffChars(originalDesc, updatedDesc);
+      //     var data = {
+      //         is_practice: isPractice,
+      //         image: images.targets[curIdx],
+      //         desc_log: diff
+      //     }
+      // });
+  })
+
+var BUBBLE_RADIUS = 32;
+var BLUR_SIGMA = 40;
+var curImg = null;
+var curBlurImg = null;
+
+
+</script>
+</body>
+</html>
