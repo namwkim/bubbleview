@@ -1,0 +1,18 @@
+body{
+	font-size:14px;
+	font-weight: 300;
+	line-height: 1.4;
+}
+.list-group-item{
+	word-wrap:break-word;
+}
+#bubble-desc{
+	word-wrap:break-word;	
+}
+.slider-selection {
+	background: lightblue;
+}
+
+.popover{
+        max-width:600px;
+    }

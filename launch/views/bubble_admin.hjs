@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+	    <title>{{ title }}</title>
+	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
+	    <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
+	    <link rel='stylesheet' href='/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css' />
+	    <link rel='stylesheet' href='/bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css' />
+	    <link rel='stylesheet' href='/stylesheets/bubble_admin.css'/>
+
+	    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+	    <script src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
+	    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	    <script src="/bower_components/bootstro/bootstro.min.js"></script>
+	    <script src="/bower_components/underscore/underscore-min.js"></script>
+	    <script src="/bower_components/bootbox/bootbox.js"></script>
+	    <script src="/javascripts/heatmap.js-2.0/build/heatmap.js"></script>
+	    <script src="/bower_components/angular/angular.min.js"></script>	    
+	    <script src="/bower_components/spinjs/spin.js"></script>
+	    <script src="/bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
+	    <script src="/javascripts/turkify.js"></script>
+	    
+	    <script type="text/javascript">
+	    	var PAGE_SIZE 	= 13;
+	    	var pageNum 	= 1;
+	    	var totalPage 	= -1;
+	    	var loadComplete = 2;
+	    	var progress 	= 0;
+	    	var logs = [];
+
+	    	$(document).ready(function(){
+	    		Initialize();
+			});
+	    	/*
+			function LoadMore(lastID, callback){
+				$.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: lastID},  function(res){
+					console.log(res.logs.length);
+					//copy new data (if, exist)
+					for (var i in res.logs){
+						logs.push(res.logs[i]);
+					}
+					//check if complete
+					if (res.lastID==null){
+						loadComplete=1;
+						console.log("load complete!");
+						callback.call();
+						$("#progress-bar").css('width', "100%").attr('aria-valuenow', 100); 
+						$("#progress-modal").modal("hide");
+						return;
+					}
+					progress+=15;	
+	                $("#progress-bar").css('width', progress+'%').attr('aria-valuenow', progress);
+					//try loading more
+					console.log('loading additional logs...');
+					LoadMore(res.lastID, callback)
+				});
+			}*/
+	    	var app = angular.module('myApp', [], function($interpolateProvider) {
+				$interpolateProvider.startSymbol('<%');
+				$interpolateProvider.endSymbol('%>');
+			});
+	        app.directive("repeatEnd", function($timeout){
+	            return {
+	                restrict: "A",
+	                link: function (scope, element, attrs) {
+	                    if (scope.$last) {
+	                        $timeout(function(){
+	                        	$(element).parent().children()[0].click();
+	                        },1)
+	                    }
+	                }
+	            };
+	        });
+	    	app.controller('imageCtrl', function($scope, $http) {
+
+			    $scope.pages = {};
+			    $scope.totalPage = 4;
+			    $scope._ = window._;
+			    $scope.imageType = "original";
+			    $scope.seeBubbles = true;
+			    $scope.evalMode = true;
+			    //scrollbar
+			    var slider = new Slider("#bSlider", {
+			    	formatter: function(value) {
+						if ($scope.minDate==undefined)
+							return value
+						
+						var date = new Date(parseInt(value));
+						var diff = new Date(date.getTime() - $scope.minDate.getTime())
+						return  diff.getMinutes() + ":" + diff.getSeconds();
+					}
+			    });
+			    slider.on("change", function(oldVal, newVal){
+						if (loadComplete!=1)
+							return;
+
+						console.log("onSlide" + newVal);
+						$scope.updateCanvas();							
+				})
+
+			    $scope.rater = gup("rater")
+			    if ($scope.rater!="Michelle" && $scope.rater!="Zoya" && $scope.rater!="Nam"){
+			    	$scope.rater= "Nam";
+			    	$scope.evalMode = false;
+			    }
+
+				$scope.updateRemaining = function(){
+					$scope.doneImages = 0;
+					for (var i in $scope.images){
+						if ($scope.images[i].doneRating)	$scope.doneImages++;
+					}
+					$scope.doneAssignments = 0;
+					for (var i in $scope.assignments){
+						if ($scope.assignments[i].rating && $scope.assignments[i].rating.relevancy!=null && $scope.assignments[i].rating.accuracy!=null) $scope.doneAssignments++;
+					}
+				}
+				$scope.updateCanvas = function(){					
+					var imagePath = $scope.imagePath
+					if ($scope.imageType=="blurred")
+						imagePath = $scope.blurredImage
+					console.log(slider)
+					var max = new Date(parseInt(slider.getValue()));
+
+					var diff = new Date(max.getTime() - $scope.minDate.getTime())
+					console.log(diff);
+					drawImage(imagePath, function(){
+						$scope.$apply(function(){
+							if ($scope.seeBubbles)
+					    		$scope.totalBubbles = drawBubbles($scope.clickData, diff);
+					    	else
+					    		$scope.totalBubbles = 0;
+						})
+
+			    	});		
+			    	//update description
+			    	var diffDesc = null;//$scope.desc;
+			    	for (var i in $scope.diffs){
+			    		var d = new Date(parseInt($scope.diffs[i].timestamp));
+			    		if (d.getTime()<=max.getTime())
+			    			diffDesc = $scope.diffs[i]
+			    	}
+			    	if (diffDesc!=null){
+				    	$('#bubble-desc').empty();
+				    	console.log($scope.diffs)
+						diffDesc['data']['desc_log'].forEach(function(part){
+				            // green for additions, red for deletions
+				            // grey for common parts
+				            var color = part.added ? 'green' :
+				              part.removed ? 'red' : 'grey';
+
+				            var span = $("<span>" + part.value + "</span>");
+				            span.css("color", color);
+				            span.appendTo("#bubble-desc");
+
+			          	});			    		
+			    	}
+				}
+				$scope.onImageTypeChange = function(){
+					if (loadComplete!=1)
+						return;
+					console.log("onImageTypeChange");
+					$scope.updateCanvas();
+				}
+				$scope.onSeeBubblesCheck = function(){
+					if (loadComplete!=1)
+						return;
+					console.log("onSeeBubblesCheck");
+					$scope.updateCanvas();	
+					//$("#bSlider").attr("enabled", $scope.seeBubbles);
+					// console.log($("#bSlider").attr("enabled"));
+				}
+				$scope.onRating = function(){
+					//update rating status for image
+					var img = _.findWhere($scope.images, {image: $scope.rating.image});
+					if (img.doneRating==false){
+						var hasAll = 0;
+						for (var j in img.logs){
+							if (img.logs[j].rating && img.logs[j].rating.relevancy!=null && img.logs[j].rating.accuracy!=null){//&& img.logs[j].rating.comprehensive!=null
+								hasAll+=1;
+							}
+						}
+						// console.log("rating done? " + (hasAll==img.logs.length));
+						if (hasAll==img.logs.length)
+							img.doneRating = true;
+					}
+					
+					// update evaluation
+					$http.post('/bubble/rating', $scope.rating)
+					.success(function(){
+						console.log("rating updated!");
+					})
+					$scope.updateRemaining();
+				}
+				$scope.onSuspicious = function(){
+					// update evaluation
+					$http.post('/bubble/rating', $scope.rating)
+					.success(function(){
+						console.log("rating updated!");
+					})
+				}
+			    $scope.onClickAssmt = function(e, x){
+			    	if (e!=null){
+						$("#assignment-list a.active").removeClass("active");
+						$(e.currentTarget).addClass("active");			    		
+			    	}	
+			    	
+			    	//$scope.desc = x.desc.data.desc;
+			    	$scope.diffs = x.diffs;
+			    	$scope.survey = x.survey;
+
+			    	$scope.clickData = x.clicks;
+			    	$scope.imagePath = x.clicks[0].data.image.replace('bubble-db-pilot', 'bubble-db');
+			    	$scope.blurredImage = $scope.imagePath.replace("targets", "targets_blurred");
+			    	   	
+			    	//set a time slider
+			    	$scope.minDate = new Date(parseInt($scope.clickData[0].timestamp));
+			    	clickMin = parseInt($scope.clickData[0].timestamp);
+			    	diffMin  = parseInt($scope.diffs[0].timestamp);
+			    	clickMax = parseInt($scope.clickData[$scope.clickData.length-1].timestamp)
+			    	diffMax = parseInt($scope.diffs[$scope.diffs.length-1].timestamp)
+
+			    	slider.setAttribute("min", Math.min(clickMin, diffMin));
+			    	slider.setAttribute("max", Math.max(clickMax, diffMax));
+			    	slider.setValue(Math.max(clickMax, diffMax), false, true);
+			    	console.log("slider max: "+ slider.getAttribute("max", Math.min(clickMin, diffMin)))
+			    	// $scope.slider = {
+			    	// 	max : Math.min(clickMin, diffMin),
+			    	// 	min : Math.max(clickMax, diffMax),
+			    	// 	value: Math.max(clickMax, diffMax)
+			    		
+			    	// }
+			    	// console.log($scope.slider);
+			    	//console.log(new Date(parseInt($scope.slider.value)))
+			    	// set up rating form
+			    	var imageName 		= x.clicks[0].data.image.replace(/^.*[\\\/]/, '').slice(0,-4);
+			    	var assignment_id 	= $scope.survey.assignment_id;
+			    	
+			    	if (x.rating){
+			    		$scope.rating = x.rating;
+			    	}else{
+
+						$scope.rating = x.rating = {
+			    			hit_id: $scope.survey.hit_id,
+			    			assignment_id: assignment_id,
+			    			image: imageName,
+			    			rater: $scope.rater,
+			    			accuracy: null,
+			    			relevancy: null
+			    		}
+			    	}
+			    	//console.log($scope.rating);
+
+
+			    }
+
+			    $scope.onClickImage = function(e){
+			    	if (e!=null){
+						$("#image-list a.active").removeClass("active");
+						$(e.currentTarget).addClass("active");			    		
+			    	}
+			    	var imgName = $(e.target).text();
+			    	for (var i in $scope.images){
+			    		var image = $scope.images[i]
+			    		if (image.image==imgName){
+			    			//update assignments
+			    			$scope.assignments = image.logs;	
+			    			$scope.updateRemaining();
+			    			console.log($scope.assignments)
+			    			break;
+			    		}
+			    	}
+
+			    }
+			    $scope.onClickPage = function(e, pnum) {
+			    	//console.log(e.target)
+			    		
+			    	if (loadComplete==0){
+			    		$("#load-alert").show().effect( "shake" ).delay(1000).toggle( "fade" );
+			    		return;
+			    	}
+			    	pageNum = pnum;	
+			    	if (e!=null){
+						$("ul.pagination li.active").removeClass("active");
+						$(e.currentTarget).addClass("active");			    		
+			    	}	    	
+			    	if ($scope.pages[pageNum]==null){// if not loaded
+			    		
+			    		var query = {pageSize:PAGE_SIZE, pageNum: pageNum, dbName: gup("db")};
+			    		console.log(query);
+			    		var spinner = new Spinner().spin();
+						$("#image-panel").prepend(spinner.el);	
+						$('#image-list').fadeTo("fast", 0.3);
+						loadComplete = 0;
+			    		$http.get('/bubble/pagelogs', {params: query})
+		    			.success(function(res){
+
+		    				$http.get('/bubble/ratings', {params: {rater: $scope.rater}})
+	    					.success(function(ratings){
+	    						
+	    						loadComplete = 1;
+	    						//update image list
+								$scope.totalPage = res.totalPage;
+								
+								$scope.images = $scope.pages[pageNum] = res.logs;	
+
+								console.log($scope.images);
+								console.log(ratings);
+	    						if (ratings.length>0){
+	    							$scope.ratings = {};
+	    							//group by images
+	    							var imageGroup = _.groupBy(ratings, function(r){ return r.image })
+	    							for (var img in imageGroup){
+	    								var g = imageGroup[img];
+	    								$scope.ratings[img] = _.groupBy(g, function(r){ return r.assignment_id })
+	    							}
+	    							console.log($scope.ratings)
+									for (var i in $scope.images){
+		    							var img = $scope.images[i].image;
+		    							var hasAll = 0;
+		    							for (var j in $scope.images[i].logs){
+		    								var assID = $scope.images[i].logs[j].survey.assignment_id;
+		    								if (_.has($scope.ratings, img) && _.has($scope.ratings[img], assID)){
+		    									
+		    									$scope.images[i].logs[j].rating = $scope.ratings[img][assID][0];	
+		    									if ($scope.images[i].logs[j].rating.relevancy!=null && $scope.images[i].logs[j].rating.accuracy!=null) 
+		    										hasAll+=1;
+		    									console.log("rating:")
+		    									console.log($scope.images[i].logs[j].rating);
+		    								}		    								
+		    							}
+
+		    							if (hasAll==$scope.images[i].logs.length)
+		    								$scope.images[i].doneRating = true;
+		    							else
+		    								$scope.images[i].doneRating = false;
+		    							//console.log("done: " + $scope.images[i].doneRating);
+		    						}
+		    						$scope.updateRemaining();
+	    						}else{
+	    						}
+								//remove spinner
+	    						$("#image-panel").find('.spinner').remove();
+	    						$('#image-list').fadeTo("fast", 1.0);	
+	    						
+
+	    					})		
+							
+		    			})
+
+			    	}else{
+			    		$scope.images = $scope.pages[pageNum];
+			    		$scope.updateRemaining();	
+			    	}
+					
+			    }		
+			
+			    //$scope.onClickPage(null, 0);	    
+			});
+			function Initialize(){
+				$('[data-toggle="tooltip"]').tooltip()
+				$('[data-toggle="popover"]').popover({ trigger: "hover", container: 'body'})
+				$("#progress-modal").modal({
+	                keyboard: false,
+	                backdrop: "static"
+	            });
+	            // progressbar
+	            var timer;
+	            timer = setInterval(function(){
+					//check if complete
+					if (loadComplete==1){
+						console.log("load complete!");
+						$("#progress-bar").css('width', "100%").attr('aria-valuenow', 100); 
+						$("#progress-modal").modal("hide");
+						clearInterval(timer);
+						return;
+					}
+					progress+=15;	
+	                $("#progress-bar").css('width', progress+'%').attr('aria-valuenow', progress);
+					
+	            }, 500);
+
+
+			}
+
+			function drawImage(imagePath, callback){
+				//draw image
+				var img = new Image();
+				img.onload = function(){
+					var canvas = $("#bubble-canvas");
+					//console.log(this.naturalWidth);
+					var ctx = canvas[0].getContext('2d');
+					ctx.clearRect(0, 0, canvas[0].width, canvas[0].height);
+
+					var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas[0].width, canvas[0].height);
+					ctx.drawImage(img,0,0, newSize.width, newSize.height);
+
+					if (callback) callback.call(this);
+
+				}
+				img.src = imagePath;	
+			}
+
+			function drawBubbles(clickData, maxDate){
+				var canvas = $("#bubble-canvas");
+				//console.log(canvas)
+				var ctx = canvas[0].getContext('2d');
+				var totalCount = 0;
+
+				
+				//draw circles
+				ctx.save();
+				ctx.globalAlpha = 0.2;
+				
+				prev_x = null, prev_y=null
+
+				//heatmapData = [];
+				for (var i in clickData){
+					
+					var click = clickData[i].data;
+					//console.log(click);
+					/*heatmap.addData({
+				    	x: click.center_x,
+					    y: click.center_y,
+					    value: 100
+					 });
+					*/
+					var date = new Date(parseInt(clickData[i].timestamp));
+					var minDate = new Date(parseInt(clickData[0].timestamp));
+					var diff = new Date(date.getTime() - minDate.getTime())
+
+					totalCount++;
+					if (maxDate && maxDate.getTime()<diff.getTime())
+						break;
+
+					ctx.beginPath();
+					ctx.arc(click.center_x, click.center_y, click.radius, 0, 6.28, false); 
+					ctx.fillStyle="red";
+					ctx.fill();
+
+					if (prev_x && prev_y){
+						ctx.save();
+						ctx.globalAlpha = 0.5;
+						ctx.beginPath();
+						ctx.moveTo(prev_x, prev_y);
+						ctx.lineTo(click.center_x, click.center_y);
+						ctx.strokeStyle="green";
+						ctx.stroke();
+						ctx.restore();
+					}
+					ctx.save();
+					ctx.globalAlpha = 0.8;	
+					ctx.fillStyle="green"
+					roundRect(ctx, parseFloat(click.center_x), parseFloat(click.center_y), 25, 12, 5, true, false);
+					ctx.restore();
+
+					ctx.save();
+					ctx.beginPath();
+					ctx.font="10px Georgia";		
+					ctx.globalAlpha = 0.5;	
+					ctx.fillStyle="white";
+					
+					ctx.fillText(diff.getMinutes()+":"+diff.getSeconds(), click.center_x, parseFloat(click.center_y)+8);
+					ctx.restore();
+
+					prev_x=click.center_x;	prev_y = click.center_y;
+
+					//heatmapData.push({x:click.center_x, y:click.center_y, value:1})
+				}
+				ctx.restore();
+				return totalCount;
+			}
+
+			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {		
+				//console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
+				//console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);						
+				var newWidth 	= imgWidth;	
+				var newHeight	= imgHeight;		
+				if (newWidth>canvasWidth){
+					newWidth 	= canvasWidth;
+					var wratio 	= canvasWidth/imgWidth;
+					newHeight 	= wratio*newHeight;
+				}
+				if (newHeight>canvasHeight){
+					newHeight 	= canvasHeight;
+					var hratio 	= canvasHeight/imgHeight;
+					newWidth 	= hratio*newWidth;
+				}
+				//console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
+				return {width: newWidth, height: newHeight};
+			}
+			function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+				if (typeof stroke == "undefined" ) {
+					stroke = true;
+				}
+				if (typeof radius === "undefined") {
+					radius = 5;
+				}
+				ctx.beginPath();
+				ctx.moveTo(x + radius, y);
+				ctx.lineTo(x + width - radius, y);
+				ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+				ctx.lineTo(x + width, y + height - radius);
+				ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+				ctx.lineTo(x + radius, y + height);
+				ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+				ctx.lineTo(x, y + radius);
+				ctx.quadraticCurveTo(x, y, x + radius, y);
+				ctx.closePath();
+				if (stroke) {
+					ctx.stroke();
+				}
+				if (fill) {
+					ctx.fill();
+				}        
+}
+
+
+	    </script>
+  	</head>
+  	<body ng-app="myApp" ng-controller="imageCtrl">
+		<!-- Progress Modal -->
+		<div class="modal fade" id="progress-modal" tabindex="-1" role="dialog" aria-labelledby="progress-modal-label" aria-hidden="true">
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h4 class="modal-title" id="progress-modal-label">Loading Bubbles...</h4>
+		            </div>
+		            <div class="modal-body">
+		                <div class="progress">
+		                    <div id="progress-bar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+		                    </div>
+		                </div>  
+		            </div>
+		        </div>
+		    </div>
+		</div>
+	  	<div class="container">
+	  		<h3><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Bubble Monitoring Interface <small ng-if="evalMode">(<% rater %>)</small></h3>
+	  		<div class="row">
+	  			<div class="col-md-2">
+	  				<div  id="image-panel" class="panel panel-default">
+	  					<div id="load-alert" class="alert alert-danger" role="alert" style="display:none">Loading...</div>
+						<!-- Default panel contents -->
+						<div class="panel-heading">Images</div>
+						<!-- Pagination -->
+						
+						<nav class="text-center">
+							<div ng-if="evalMode">Progress: <% doneImages %>/<% images.length %></div>
+						  	<ul class="pagination pagination-sm" style="margin:5px 0">						    
+						    <li class="animate-repeat" ng-repeat="x in _.range(1,totalPage+1)" ng-class="{active: $first}" ng-click="onClickPage($event, x)" repeat-end>
+						    	<a href="#"><% x %></a>
+						    </li>					    
+						  </ul>
+						</nav>
+
+						<!-- List group -->
+						<div id="image-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
+							<a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}" ng-click="onClickImage($event)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.doneRating"></span><% x.image %></a>
+						</div>
+					</div>
+	  			</div>
+	  			<div class="col-md-2">
+	  				<div class="panel panel-default">
+						<!-- Default panel contents -->
+						<div class="panel-heading">AssignmentID</div>
+						<div ng-if="evalMode" align="center">Progress: <% doneAssignments %>/<% assignments.length %></div>
+						<!-- List group -->
+						<div id="assignment-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
+							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.rating?(x.rating.relevancy!=null && x.rating.accuracy!=null):false"></span><% x.survey.assignment_id %></a>
+						</div>
+					</div>
+	  			</div>
+	  			<div class="col-md-8">
+	  				<div class="panel panel-default" role="tabpanel">
+	  					<div class="panel-heading">
+					  		<!-- Nav tabs -->
+					  		<ul class="nav nav-pills" role="tablist">
+							    <li role="presentation" class="active"><a href="#bubble" aria-controls="bubble" role="tab" data-toggle="tab">Bubble</a></li>
+							    <li role="presentation"><a href="#survey" aria-controls="survey" role="tab" data-toggle="tab">Survey</a></li>
+						  	</ul>
+					  	</div>
+
+					  	<!-- Tab panes -->
+					  	<div class="panel-body">
+						  	<div class="tab-content">
+						    	<div role="tabpanel" class="tab-pane fade in active" id="bubble">
+						    		<div class="well">
+						    			<p id="bubble-desc" ><% desc %></p>
+						    			<div class="row" ng-if="evalMode">
+						    				<div class="col-md-11">
+									    		<div class="input-group">
+									    			<strong>Relevancy: </strong><br>
+									    			<span style="margin-left:20px;" ></span>
+									    			<label class="radio-inline" ><input type="radio" name="relevancy" ng-model="rating.relevancy" value="1" ng-change="onRating()">Mostly Relevant</label>
+													<label class="radio-inline" ><input type="radio" name="relevancy" ng-model="rating.relevancy" value="2" ng-change="onRating()">Mostly Irrelevant</label>													
+
+												</div>
+												<div class="input-group">
+													<strong>Accuracy: </strong><br>
+													<span style="margin-left:20px;" ></span>
+													<label class="radio-inline" ><input type="radio" name="accuracy" ng-model="rating.accuracy" value="3" ng-change="onRating()">Mostly Accurate</label>													
+													<label class="radio-inline" ><input type="radio" name="accuracy" ng-model="rating.accuracy" value="4" ng-change="onRating()">Mostly Inaccurate</label>	
+												</div>	
+												<!-- <div class="input-group">
+													<strong>Comprehensiveness: </strong><br>
+													<span style="margin-left:20px;" ></span>
+													<label class="radio-inline" ><input type="radio" name="comprehensive" ng-model="rating.comprehensive" value="3" ng-change="onRating()">Comprehensive</label>													
+													<label class="radio-inline" ><input type="radio" name="comprehensive" ng-model="rating.comprehensive" value="4" ng-change="onRating()">Incomprehensive</label>	
+												</div>	 -->
+											</div>
+											<div class="col-md-1">
+												<a id="helpPopover" data-html="true" href="" data-toggle="popover" data-placement="left" title="Help" 
+												data-content="
+													<div>
+														<p>
+															<strong>Relevancy</strong>: whether text description is relevant to the image. <br>
+															<strong>Accuracy</strong>: whether text description is correct in terms of information presented in the image.
+														</p>
+													<div>
+												"><span class="glyphicon glyphicon-question-sign lead" style="margin-right:8px;font-size:24px" aria-hidden="true"></a>	
+											</div>		
+										</div>	
+						    		</div>
+						    		<div class="panel panel-default">
+										<div class="panel-body">
+								    		<div class="row">
+								    			<div class="col-md-4">
+									    			<label class="radio-inline"><input type="radio" name="imageType" ng-model="imageType" value="original" ng-change="onImageTypeChange()">Original</label>
+													<label class="radio-inline"><input type="radio" name="imageType" ng-model="imageType" value="blurred" ng-change="onImageTypeChange()">Blurred</label>					
+													<br>
+													
+												</div>
+												<div class="col-md-8">
+													<label class="checkbox-inline"><input type="checkbox" ng-model="seeBubbles" ng-change="onSeeBubblesCheck()">See Bubbles (<span><% totalBubbles %>/<% clickData.length %></span>)</label>
+													<input id="bSlider" type="text"/>
+
+													<!-- <slider id="bSlider" ng-model="slider.value" min="slider.min" step="slider.step" max="slider.max" formater="formaterFn" on-slide="onSlide($event, slider.value)" ></slider>	 -->	
+												</div>
+								    		</div>
+								    		<br>
+								    		<canvas id="bubble-canvas" width="600" height="600"></canvas>
+										</div>
+									</div>
+
+						    	</div>
+						    	<div role="tabpanel" class="tab-pane fade" id="survey">
+						    		<strong>HIT ID: </strong><% survey.hit_id %></span>
+						    		<br><br>
+						    		<strong>Assignment ID: </strong><% survey.assignment_id%></span>
+						    		<br><br>
+						    		<strong>Worker ID: </strong><% survey.worker_id%></span>
+						    		<br><br>
+						    		<!--<strong>Image File: </strong><span id="survey-image"></span>
+						    		<br><br>-->
+						    		<strong>Gender: </strong><% survey.data.gender %></span>
+						    		<br><br>
+						    		<strong>Age: </strong><% survey.data.age %></span>
+						    		<br><br>
+						    		<strong>Ethnicity: </strong><% survey.data.ethnic %></span>
+						    		<br><br>
+						    		<strong>Feedback: </strong><% survey.data.feedback%></span>
+						    		<br><br>
+
+
+						    	</div>
+						  	</div>
+					  	</div>
+					</div>
+	  				
+	  			</div>
+
+    		</div>
+		<div>
+  	</body>
+</html>

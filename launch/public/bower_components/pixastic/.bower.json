@@ -1,0 +1,25 @@
+{
+  "name": "pixastic",
+  "main": "pixastic.js",
+  "homepage": "https://github.com/jmmerino/pixastic",
+  "authors": [
+    "Jacob Seidelin - http://pixastic.com/"
+  ],
+  "description": "JavaScript Image Processing Library",
+  "keywords": [
+    "pixastic",
+    "image",
+    "processing"
+  ],
+  "license": "MPL and GPL3.0",
+  "_release": "331828a585",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "331828a585596a8f903bc9e0c9c850b9be03ed56"
+  },
+  "_source": "git://github.com/jmmerino/pixastic.git",
+  "_target": "*",
+  "_originalSource": "pixastic",
+  "_direct": true
+}

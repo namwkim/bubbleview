@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ title }}</title>
+    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
+    <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
+    <link rel='stylesheet' href='/stylesheets/bubble.css' />
+    <script src="/javascripts/turkify.js"></script>
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/bower_components/bootstro/bootstro.min.js"></script>
+    <script src="/bower_components/underscore/underscore-min.js"></script>
+    <script src="/bower_components/bootbox/bootbox.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="/bower_components/jsdiff/diff.js"></script>
+
+    <script type="text/javascript">
+        var INTRO = 0,
+            CONSENT = 1,
+            PRAC_INST = 2,
+            REAL_INST = 3,
+            STUDY = 4,
+            DEBRIEF = 5;
+        var MIN_DESC = 150,
+            RADIUS_PIXEL = 32; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+        var stage = INTRO;
+        var formSelector = "#mturk-form";
+        var images = null;
+        var realImages = null;
+        var practiceImages = null;
+        var base_url = "/images/bubble-db-pilot/";
+        var logs = null;
+        var isPractice = false;
+
+        var curIdx = 0;
+        var curImg = null;
+        var curBlurImg = null;
+        var size = {
+            width: 0,
+            height: 0,
+            screenWidth: 0,
+            screenHeight: 0
+        };
+        var assignmentId, hitId, workerId;
+        var clickCount = 0,
+            totalClickCount = 0,
+            charCount = 0;
+
+
+        var originalDesc = "";
+        var updatedDesc = "";
+        $(document).ready(function() {
+            Initialize();
+        });
+
+        function Initialize() {
+            size.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            size.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            size.screenWidth = screen.width;
+            size.screenHeight = screen.height;
+
+            $("#consent").hide();
+            $("#prac-inst").hide();
+            $("#real-inst").hide();
+            $("#bubble").hide();
+            $("#debrief").hide();
+
+            // set up AMT form
+            assignmentId = gup("assignmentId");
+            hitId = gup("hitId");
+            workerId = gup("workerId");
+            console.log(hitId);
+            console.log(assignmentId);
+            console.log(workerId);
+            if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") { //preview mode
+                $('#intro-start-button').hide(); //do not allow a worker to proceed
+                $('#recaptcha').hide();
+                return;
+            } else if (assignmentId == "" || hitId == "" || workerId == "") { // invalid access
+                bootbox.alert("You must visit this website through Amazon Mechanical Turk!");
+                $("#intro").hide();
+                return;
+            }
+            turkify(formSelector);
+
+
+            //load target images
+            $.get('/bubble/images', {
+                hitId: hitId
+            }, function(res) {
+                if (res.targets.length == 0) {
+                    bootbox.alert("Failed to retrieve visualization images. HIT ID is not valid (" + hitId + ").", function() {
+                        $("#submit-btn").trigger("click", [true]);
+                    });
+                }
+                console.log(res);
+                realImages = res;
+                if (gup("is_demo")=="yes"){
+                  console.log("this is a demo");
+                  StartExperiment()
+                }
+
+            });
+
+            //load practice images
+            practiceImages = {
+                targets: [],
+                blurred: []
+            };
+            practiceImages.targets.push(base_url + "bubble-practice-1.png");
+            //practiceImages.targets.push(base_url+"bubble-practice-2.jpg");
+
+            practiceImages.blurred.push(base_url + "bubble-practice-1-blurred.png");
+            //practiceImages.blurred.push(base_url+"bubble-practice-2-blurred.jpg");
+            /*
+            randomized = _.take(_.shuffle(_.zip(practiceImages.targets, practiceImages.blurred)),2);
+            practiceImages.targets = _.map(randomized, function(arr){ return arr[0]; });
+            practiceImages.blurred = _.map(randomized, function(arr){ return arr[1]; });*/
+            console.log(practiceImages);
+
+            //Set up callback functions
+            $(document).keydown(OnKeyPress);
+
+            $(".next-btn").click(function() {
+                ChangeStage(stage + 1);
+            });
+            $("#bubble-next-btn").click(NextImage);
+            $("#submit-btn").click(SubmitForm);
+
+            $('#intro-start-button').click(ConfirmRecaptcha);
+            $('#consent-btn').click(ConsentForm);
+
+            $('#practice-btn').click(StartPractice);
+            $('#real-btn').click(StartExperiment);
+
+            $('#bubble-vis-desc').keyup(function() {
+                $('#char-count').text($('#bubble-vis-desc').val().length);
+            })
+
+
+            $("#bubble-vis-desc").focusin(function() {
+                console.log("in focus");
+                originalDesc = $("#bubble-vis-desc").val();
+                //$("#msg").text($("#textbox").val());
+            });
+
+            $("#bubble-vis-desc").focusout(function() {
+                console.log("out focus");
+                updatedDesc = $("#bubble-vis-desc").val();
+
+                var diff = JsDiff.diffChars(originalDesc, updatedDesc);
+                var data = {
+                    is_practice: isPractice,
+                    image: images.targets[curIdx],
+                    desc_log: diff
+                }
+                LogAction("desc-change", data);
+            });
+
+            //bootstro initialization (tutorial)
+            $('#canvas').addClass("bootstro")
+                .attr("data-bootstro-title", "Click Image")
+                .attr("data-bootstro-content", "Click to reveal small, circular areas of the image to inspect the full details.")
+                .attr("data-bootstro-placement", "right")
+                .attr("data-bootstro-step", 0)
+            $('#describe-form').addClass("bootstro")
+                .attr("data-bootstro-title", "Describe Image")
+                .attr("data-bootstro-content", "Describe the image in as much detail as possible (minimum 150 characters).")
+                .attr("data-bootstro-placement", "left")
+                .attr("data-bootstro-step", 1)
+
+        }
+
+        function ConfirmRecaptcha() {
+            //check reCAPTCHA
+            //console.log(grecaptcha.getResponse());
+            $.post('/bubble/recaptcha', {
+                recaptcha_response: grecaptcha.getResponse()
+            }, function(res) {
+                console.log(res);
+                if (res.code != 0) {
+                    console.log("reCAPTCHA failed!");
+                    bootbox.alert("Verification Failed! Please Try Again...");
+                } else {
+                    console.log("reCAPTCHA success!");
+                    ChangeStage(stage + 1);
+
+                }
+            })
+
+        }
+
+        function ConsentForm() {
+            var first = $("input:radio[name=radioFirst]:checked").val();
+            var second = $("input:radio[name=radioSecond]:checked").val();
+            var third = $("input:radio[name=radioThird]:checked").val();
+
+            if (first == "no" || second == "no" || third == "no") {
+                bootbox.alert("Sorry, You are not allowed to participate in this study.", function() {
+                    $("#submit-btn").trigger("click", [true]);
+                });
+
+            } else {
+                ChangeStage(stage + 1);
+            }
+        }
+
+        function StartPractice() {
+            console.log("StartPractice");
+            images = practiceImages;
+            isPractice = true;
+            curIdx = clickCount = totalClickCount = 0;
+            LogAction("start-practice", null);
+            ChangeStage(STUDY);
+
+            //start tutorial instruction
+            $("#tutorial-msg").show();
+            bootstro.start(".bootstro", {
+                nextButtonText: "Next »",
+                prevButtonText: "Prev »"
+            });
+            $("#bubble-vis-desc").val(
+                "This chart shows the relationship between global malaria deaths and R&D funding across different continents. Africa accounts for a major portion of malaria deaths. Overall, global malaria deaths have been decreasing as R&D funding increases over time."
+            );
+            $('#char-count').text($('#bubble-vis-desc').val().length);
+        }
+
+        function StartExperiment() {
+            console.log("StartExperiment");
+            images = realImages;
+            isPractice = false;
+            curIdx = clickCount = totalClickCount = 0;
+            LogAction("start-experiment", null);
+            ChangeStage(STUDY);
+
+            $("#tutorial-msg").hide();
+            $("#bubble-vis-desc").val("");
+            $('#char-count').text($('#bubble-vis-desc').val().length);
+        }
+
+        function SetupImage(idx) {
+            // reset click count
+            clickCount = 0;
+            $("#click-count").text(clickCount);
+            $("#char-count").text(0);
+
+            //clear text area
+            $("#bubble-vis-desc").val("");
+
+            curImg = new Image();
+            curImg.onload = function() {
+                curBlurImg = new Image();
+                curBlurImg.onload = function() {
+                    // draw blurred image first
+                    //console.log($(curBlurImg).width() + ", " + console.log($(curBlurImg).height()));
+                    var canvas = $("#canvas");
+                    canvas.off('click');
+                    canvas.on('click', {
+                        width: this.naturalWidth,
+                        height: this.naturalHeight
+                    }, OnClickDrawMask);
+                    var ctx = canvas[0].getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width(), canvas.height());
+                    var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width(), canvas.height());
+                    ctx.drawImage(curBlurImg, 0, 0, newSize.width, newSize.height);
+                }
+                curBlurImg.src = images.blurred[idx];
+            }
+            curImg.src = images.targets[idx];
+        }
+
+        function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
+            var ratio = Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight);//Math.min(, 1.0);
+            if (ratio > 1.0) {
+                ratio = 1.0;
+            }
+            console.log('ratio:' + ratio);
+            return {
+                width: imgWidth * ratio,
+                height: imgHeight * ratio
+            };
+        }
+
+        function OnClickDrawMask(e) {
+            var canvas = $("#canvas");
+            var ctx = canvas[0].getContext('2d');
+
+            ctx.save();
+
+            var rect = canvas[0].getBoundingClientRect();
+
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+
+            console.log("x, y = " + x + ", " + y);
+            //reset previous cicle
+            var newSize = CalcNewImageSize(e.data.width, e.data.height, canvas.width(), canvas.height());
+            console.log(newSize);
+            ctx.drawImage(curBlurImg, 0, 0, newSize.width, newSize.height);
+
+            //draw the circle
+            ctx.beginPath();
+            ctx.arc(x, y, RADIUS_PIXEL, 0, 6.28, false);
+            ctx.clip();
+            ctx.drawImage(curImg, 0, 0, newSize.width, newSize.height);
+
+            ctx.restore();
+
+            //log click actio
+            data = {
+                is_practice: isPractice,
+                image: images.targets[curIdx],
+                center_x: x,
+                center_y: y,
+                radius: RADIUS_PIXEL,
+                size: size
+            }
+            LogAction("click", data);
+            clickCount++;
+            $("#click-count").text(clickCount);
+            totalClickCount++;
+            console.log(totalClickCount);
+        }
+
+        function NextImage() {
+            // if the description is less than minumum, can't approve
+            var desc = $("#bubble-vis-desc").val();
+            if (desc.length < MIN_DESC) {
+                bootbox.alert("The description should be more than 150 characters!")
+                return;
+            }
+            //log description
+            LogAction("explain", {
+                is_practice: isPractice,
+                image: images.targets[curIdx],
+                desc: desc
+            });
+            console.log('clickCount = ' + clickCount);
+            //increase image index
+            curIdx++;
+            if (curIdx < images.targets.length) {
+                //setup a new image
+                SetupImage(curIdx);
+            } else {
+                //all images are used, move on to the next stage
+                if (isPractice == true)
+                    return ChangeStage(REAL_INST);
+                else
+                    return ChangeStage(DEBRIEF);
+            }
+
+        }
+
+        function OnKeyPress(e) {
+            // if(e.keyCode == 32){
+            // 	e.preventDefault(); //disable spacebar scrolling
+            //    	// user has pressed space
+            //    	// if (stage==INTRO){
+            //    	// 	ChangeStage(stage+1);
+            //    	// 	return;
+            //    	// }
+            // }
+        }
+
+        function ChangeStage(newStage) {
+            HideStage(stage);
+            stage = newStage;
+            switch (stage) {
+                case INTRO:
+                    LogAction("introduction", null);
+                    console.log("INTRO");
+                    break;
+                case CONSENT:
+                    LogAction("consent-form", null);
+                    console.log("CONSENT");
+                    $("#consent").show();
+                    break;
+                case PRAC_INST:
+                    LogAction("practice-instruction", null);
+                    console.log("PRAC_INST");
+                    $("#prac-inst").show();
+                    break;
+                case REAL_INST:
+                    LogAction("realstudy-instruction", null);
+                    console.log("REAL_INST");
+                    $("#real-inst").show();
+                    break;
+                case STUDY:
+                    console.log("STUDY");
+                    $("#bubble").show();
+                    SetupImage(curIdx);
+                    break;
+                case DEBRIEF:
+                    console.log("DEBRIEF");
+                    $("#debrief").show();
+                    LogAction("end", null);
+            }
+
+        }
+
+        function HideStage(prevStage) {
+            switch (prevStage) {
+                case INTRO:
+                    $("#intro").hide();
+                    break;
+                case CONSENT:
+                    $("#consent").hide();
+                    break;
+                case PRAC_INST:
+                    $("#prac-inst").hide();
+                    break;
+                case REAL_INST:
+                    $("#real-inst").hide();
+                    break;
+                case STUDY:
+                    $("#bubble").hide();
+                    break;
+                case DEBRIEF:
+                    $("#debrief").hide();
+                    break;
+            }
+        }
+
+        function LogAction(action, data, callback) {
+            var log = {
+                timestamp: $.now(),
+                hitId: hitId,
+                assignmentId: assignmentId,
+                workerId: workerId,
+                action: action,
+                data: data
+            };
+            $.post("/bubble/log", log, function(res) {
+                if (res.code != 0) {
+                    bootbox.alert("Failed to log a worker action!");
+                } else {
+                    if (callback) callback.call();
+                }
+            });
+
+        }
+
+        function SubmitForm(e, notQualified) {
+            if (notQualified == true) { //failed to pass the consent form
+                $("<input type='hidden' name='consentForm' value='notQualified'>");
+                $(formSelector).submit();
+                return;
+            }
+            //generating answer data (name-value pairs)
+
+            // 1. Target Image Count
+            $("<input type='hidden' name='imageCount' value='" + images.targets.length + "'>").appendTo($(formSelector));
+            // 2. Total Click Count
+            $("<input type='hidden' name='clickCount' value='" + totalClickCount + "'>").appendTo($(formSelector));
+            // 3. Avg Click Count
+            $("<input type='hidden' name='avgClickCount' value='" + (totalClickCount / images.targets.length) + "'>").appendTo($(formSelector));
+
+            var familarity = $("input:radio[name=familarity]:checked").val();
+            var gender = $("input:radio[name=gender]:checked").val();
+            var age = $("input:radio[name=ageGroup]:checked").val();
+            var ethnic = "";
+            if ($("#ethnicAsian").prop('checked')) ethnic += "/" + $("#ethnicAsian").val();
+            if ($("#ethnicLatino").prop('checked')) ethnic += "/" + $("#ethnicLatino").val();
+            if ($("#ethnicPacific").prop('checked')) ethnic += "/" + $("#ethnicPacific").val();
+            if ($("#ethnicAfrican").prop('checked')) ethnic += "/" + $("#ethnicAfrican").val();
+            if ($("#ethnicMiddle").prop('checked')) ethnic += "/" + $("#ethnicMiddle").val();
+            if ($("#ethnicWhite").prop('checked')) ethnic += "/" + $("#ethnicWhite").val();
+            if ($("#ethnicEastInd").prop('checked')) ethnic += "/" + $("#ethnicEastInd").val();
+            if ($("#ethnicNative").prop('checked')) ethnic += "/" + $("#ethnicNative").val();
+            if ($("#ethnicOther").prop('checked')) ethnic += "/" + $("#ethnicOther").val();
+            if ($("#ethnicNotToSay").prop('checked')) ethnic += "/" + $("#ethnicNotToSay").val();
+
+            var feedback = $("#survey-feedback").val();
+
+            // // submit the form to the mturk site
+            console.log("Submiting mturk-form...");
+            console.log("imageCount: " + images.targets.length);
+            console.log('totalClickCount = ' + totalClickCount);
+            console.log('avgClickCount = ' + (totalClickCount / images.targets.length));
+
+            console.log(gender);
+            console.log(age);
+            console.log(ethnic);
+            console.log(feedback);
+
+            LogAction("survey", {
+                familarity: familarity,
+                gender: gender,
+                age: age,
+                ethnic: ethnic,
+                feedback: feedback
+            }, function() {
+                $(formSelector).submit();
+            });
+
+            // console.log("assignmentId: " + $("#mturk-form input[name=assignmentId]").val());
+            // console.log("targetNumber: " + $("#mturk-form input[name=targetNumber]").val());
+            // console.log("correctNumber: " + $("#mturk-form input[name=correctNumber]").val());
+
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div id="intro">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>BubbleView Study</h2>
+                        <p class="text-justify">
+                            In this HIT you will be presented with a series of images containing graphs and diagrams, and asked to describe the images in as much detail as possible.
+                            <br>
+                            <br> The HIT should take about 5 minutes to complete.
+                        </p>
+                        <br>
+                        <img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db-pilot/study_overview.png">
+                        <br>
+
+                        <div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG"></div>
+                        <br>
+                        <button id="intro-start-button" type="button" class="btn btn-success btn-lg btn-block">
+                            <span class="glyphicon glyphicon-play"></span> Start
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div id="consent">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>STATEMENT OF INFORMED CONSENT</h2>
+                        <p class="text-justify">
+                            <br>
+                            <strong>Purpose of research:</strong> I am studying the memorability of data visualizations and information graphics. The elements of each image, such as type of graph and layout, are of interest in determining what components
+                            may aid memorability. This study focuses on the impact that visual elements have on visualization recognition and memorability.
+                            <br>
+                            <br>
+                            <strong>What your participation in this study will involve:</strong>
+                            <br> Reading a summary of relevant background information.
+                            <br> Seeing/clicking a visualization image and describing the image.
+                            <br>
+                            <br>
+                            <strong>Time required:</strong> Participation will take approximately 5 minutes.
+                            <br>
+                            <br>
+                            <strong>Risks:</strong> There are no anticipated risks associated with participating in this study. The effects of viewing the images should be comparable to those you would experience from viewing a computer monitor for 5
+                            minutes.
+                            <br>
+                            <br>
+                            <strong>Confidentiality:</strong> Your participation in this study will remain confidential, and your identity will not be stored with your data. Your responses will be assigned a code number, and the list connecting your Amazon
+                            worker ID with this code number will be kept in a locked room and will be destroyed upon completion of the project.
+                            <br>
+                            <br>
+                            <strong>Participation and withdrawal:</strong> Your participation in this study is completely voluntary, and you may withdraw at any time without penalty. You may skip any questions/tasks that you do not want to complete.
+                            <br>
+                            <br>
+                            <strong>Researcher Contact Information:</strong> If you have questions about this research, please contact Nam Wook Kim, (Maxwell Dworkin 142, 33 Oxford St , Cambridge, MA, 02138, namwkim@seas.harvard.edu).
+                            <br>
+                            <br>
+                            <strong>Faculty Sponsor:</strong> Prof. Hanspeter Pfister (33 Oxford Street, Maxwell-Dworkin Rm 227, Cambridge, MA 02138, pfister@seas.harvard.edu, 617-496-8269)
+                            <br>
+                            <br>
+                            <strong>Agreement:</strong> The nature and purpose of this research have been satisfactorily explained to me and I agree to become a participant in the study as described above. I understand that I am free to discontinue participation
+                            at any time if I so choose, and that the investigator will gladly answer any questions that arise during the course of the research.
+                            <br>
+                            <br>
+
+                        </p>
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                The experimenter will now verify the following information:
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1. You are age 18 or older.</td>
+                                            <td>
+                                                <label class="radio-inline text-right" align="right">
+                                                    <input type="radio" name="radioFirst" id="radioFirst1" value="yes"> Yes
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="radioFirst" id="radioFirst2" value="no" checked> No
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2. You have read and understand the information above.</td>
+                                            <td>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="radioSecond" id="radioSecond1" value="yes"> Yes
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="radioSecond" id="radioSecond2" value="no" checked> No
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>3. You want to participate in this research and continue with the research activity</td>
+                                            <td>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="radioThird" id="radioThird1" value="yes"> Yes
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="radioThird" id="radioThird2" value="no" checked> No
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <button id="consent-btn" type="button" class="btn btn-success btn-lg btn-block">
+                            <span class="glyphicon glyphicon-ok"></span> Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="prac-inst">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>BubbleView Study Instruction</h2>
+                        <p class="text-justify">
+                            Welcome! In this HIT you will be presented with a series of images containing graphs and diagrams.
+                            <br>
+                            <br>
+                            <!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
+								<br><br>-->
+                            For each image, you will be asked to <strong>describe the image</strong> in as much detail as possible (minimum 150 characters). The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the
+                            image. However, you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
+                            <br>
+                            <br> We will only pay for successfully completed work.
+                            <br>
+                            <br> We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.
+                        </p>
+                        <br>
+                        <img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db-pilot/study_overview.png">
+                        <br>
+                        <button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
+                            <span class="glyphicon glyphicon-play"></span> Continue
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="real-inst">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>BubbleView Study Instruction</h2>
+                        <p class="text-justify">
+                            Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer.
+                            <br>
+                            <br> Please <strong>click the "Start" button</strong> below when you are ready to begin.
+                        </p>
+                        <br>
+                        <img class="center-block thumbnail" height="350" src="/images/bubble-db-pilot/study_overview.png">
+                        <br>
+                        <button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
+                            <span class="glyphicon glyphicon-play"></span> Start
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="bubble">
+                <h2><span id="tutorial-msg" class="label label-danger">Tutorial</span> Click and Describe the Image.</h2>
+                <div class="row">
+                    <div class="col-md-8">
+                        <canvas id="canvas" width="650" height="650"></canvas>
+                    </div>
+                    <div class="col-md-4">
+                        <form id="describe-form" role="form">
+                            <div class="form-group">
+                                <label for="bubble-vis-desc">
+                                    <span class="badge"><span id="click-count">0</span> clicks</span>
+                                    <span class="badge"><span id="char-count">0</span> characters</span>
+                                </label>
+                                <textarea id="bubble-vis-desc" name="desc" class="form-control" rows="20" placeholder="Describe the image in as much detail as possible..."></textarea>
+                            </div>
+                        </form>
+                        <button id="bubble-next-btn" type="button" class="btn btn-success btn-lg btn-block">
+                            <span class="glyphicon glyphicon-play"></span> Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="debrief">
+                <h2>Completed!</h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="text-justify">
+                            Thanks for your participation! Upon our confirming your completion of the study, payment will be deposited in your Amazon Payments account.
+                            <br>
+                            <br>
+                        </p>
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <table class="table table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                Survey
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Familarity</td>
+                                            <td>
+                                                <div>
+                                                    How familiar are you with the conents depicted in the images?
+                                                </div>
+                                                <div class="radio">
+                                                    <label class="radio-inline text-right" align="right">
+                                                        <input type="radio" name="familarity" id="familarity1" value="1"> 1. Not at all familiar
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="familarity" id="familarity2" value="2"> 2. Slightly familiar
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="familarity" id="familarity3" value="3"> 3. Moderately familiar
+                                                    </label>
+                                                </div>
+                                                <div class="radio">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="familarity" id="familarity4" value="4"> 4. Very familiar
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="familarity" id="familarity5" value="5"> 5. Extremely familiar
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Gender</td>
+                                            <td>
+                                                <label class="radio-inline text-right" align="right">
+                                                    <input type="radio" name="gender" id="genderMale" value="female"> Female
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="gender" id="genderFemale" value="male"> Male
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="gender" id="genderOther" value="other"> Prefer not to say
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Age</td>
+                                            <td>
+                                                <div class="radio">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="ageGroup" id="ageGroup1" value="ageGroup18"> 18 to 24
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="ageGroup" id="ageGroup2" value="ageGroup25"> 25 to 34
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="ageGroup" id="ageGroup3" value="ageGroup35"> 35 to 44
+                                                    </label>
+                                                </div>
+                                                <div class="radio">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="ageGroup" id="ageGroup4" value="ageGroup45"> 45 to 54
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="ageGroup" id="ageGroup5" value="ageGroup55"> 55 to 64
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="ageGroup" id="ageGroup6" value="ageGroup65"> 65 and over
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ethnicity</td>
+                                            <td>
+                                                <div class="checkbox">
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicAsian" value="Asian"> Asian
+                                                    </label>
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicLatino" value="Latino_Hispanic"> Latino / Hispanic
+                                                    </label>
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicPacific" value="Pacific_Islander"> Pacific Islander
+                                                    </label>
+                                                </div>
+                                                <div class="checkbox">
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicAfrican" value="Black_African"> Black / African Descent
+                                                    </label>
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicMiddle" value="Middle_Eastern"> Middle Eastern
+                                                    </label>
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicWhite" value="White_Caucasian"> White / Caucasian
+                                                    </label>
+                                                </div>
+                                                <div class="checkbox">
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicEastInd" value="East_Indian"> East Indian
+                                                    </label>
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicNative" value="Native_American"> Native American
+                                                    </label>
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicOther" value="Other"> Other
+                                                    </label>
+                                                    <label class="checkbox-inline">
+                                                        <input type="checkbox" id="ethnicNotToSay" value="NotToSay"> Prefer not to say
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Feedback</td>
+                                            <td>
+                                                <textarea id="survey-feedback" name="feedback" class="form-control" rows="3" placeholder="If you have any feedback, comments, or suggestions, please describe them here."></textarea>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="col-md-4">
+							<img src="/images/teaser.png" class="img-responsive img-rounded">
+						</div>-->
+                </div>
+                <form id="mturk-form">
+                    <button id="submit-btn" type="button" class="btn btn-success btn-lg btn-block">
+                        <span class="glyphicon glyphicon-send"></span> Submit
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div>
+</body>
+
+</html>
