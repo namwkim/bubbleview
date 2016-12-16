@@ -78,7 +78,7 @@ var shg_table = [
     24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24 ];
 
 
-function processImage(img, canvas, radius, blurAlphaChannel)
+function processImage(img, w, h, canvas, radius, blurAlphaChannel)
 {
     if (typeof(img) == 'string') {
         var img = document.getElementById(img);
@@ -86,8 +86,8 @@ function processImage(img, canvas, radius, blurAlphaChannel)
     else if (typeof HTMLImageElement !== 'undefined' && !img instanceof HTMLImageElement) {
         return;
     }
-    var w = img.naturalWidth;
-    var h = img.naturalHeight;
+    var w = w;//img.naturalWidth;
+    var h = h;//img.naturalHeight;
 
     if (typeof(canvas) == 'string') {
         var canvas = document.getElementById(canvas);
@@ -96,10 +96,10 @@ function processImage(img, canvas, radius, blurAlphaChannel)
         return;
     }
 
-    canvas.style.width  = w + 'px';
-    canvas.style.height = h + 'px';
-    canvas.width = w;
-    canvas.height = h;
+    // canvas.style.width  = w + 'px';
+    // canvas.style.height = h + 'px';
+    // canvas.width = w;
+    // canvas.height = h;
 
     var context = canvas.getContext('2d');
     context.clearRect(0, 0, w, h);
