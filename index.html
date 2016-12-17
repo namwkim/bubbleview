@@ -18,7 +18,7 @@
 </head>
 
 <body>
-  <div class="navbar navbar-info navbar-fixed-top">
+  <div class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -33,7 +33,7 @@
       <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav navbar-right">
           <li class="active"><a href="#demo">Demo</a></li>
-          <li><a href="#code">Code</a></li>
+          <li><a href="https://github.com/namwkim/bubbleview" target="_blank">Code</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
@@ -88,124 +88,156 @@
           Submitted to <em>ACM Transactions on Computer-Human Interaction (TOCHI)</em>
           <br> *Equal contribution
         </p>
-        <a href="javascript:void(0)" class="btn btn-raised btn-default btn-sm">PDF</a>
+        <a href="https://drive.google.com/file/d/0B4lNbruZjXtLdTJfZldxOC1JN0k/view?usp=sharing" target="_blank" class="btn btn-raised btn-default btn-sm">PDF</a>
         <a href="javascript:void(0)" class="btn btn-raised btn-default btn-sm">Bibtex</a>
         <br>
+        <h4>Acknowledgement</h4>
+        <p>The authors would like to thank <a href="http://www.dgp.toronto.edu/~donovan/" target="_blank">Peter O’Donovan</a> for sharing his dataset and for helpful discussions, and Ming Jiang for answering questions about their data and methodology. The authors would also like to ac-knowledge <a href="http://www.dgp.toronto.edu/~hertzman/" target="_blank">Aaron Hertzmann</a>, <a href="http://bryanrussell.org/" target="_blank">Bryan Russell</a> and <a href="http://www.aviz.fr/~fekete/" target="_blank">Jean-Daniel Fekete</a> for helpful input. This work has been made possible through support from Google, Xerox, the Department of Defense through the National Defense Science & Engineering Graduate Fellowship (NDSEG) Program, the NSF Graduate Research Fellowship Program, the Natural Sciences and Engineering Research Council of Canada Postgraduate Doctoral Scholarship (NSERC PGS-D), and the Kwanjeong Educational Foundation. </p>
+
       </div>
     </div>
     <div id="demo" class="panel panel-default">
       <div class="panel-body">
         <h2>Live Demo</h2>
-        <h3>BubbleView Interface</h3>
         <p>Choose a parameter setting, and click & describe the image. You can check your result through the monitoring interface below in real time.</p>
-
-        <div class="row">
-          <div class="col-md-2">
-            <label>Bubble Radius</label>
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">BubbleView Interface</h3>
           </div>
-          <div class="col-md-10">
-            <form name='radiusForm'>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="30" checked> 30
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="40"> 40
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="50"> 50
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="60"> 60
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="70"> 70
-              </label>
-            </form>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-2">
-            <label>Blur Radius</label>
-          </div>
-          <div class="col-md-10">
-            <form name='blurForm'>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="30" checked> 30
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="40"> 40
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="50"> 50
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="60"> 60
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="70"> 70
-              </label>
-            </form>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div id="canvas-area" style="display:inline-block;float:left;">
-              <canvas id="canvas" width="500" height="500"></canvas>
-            </div>
-            <form style="display:inline-block;margin-left:20px;width:300px;">
-              <span class="badge"><span id="click-count">0</span> clicks</span>
-              <span class="badge"><span id="char-count">0</span> characters</span>
-              <div class="form-group label-floating">
-                <label for="desc" class="control-label">Describe the image in as much detail as possible...</label>
-                <textarea id="desc" name="desc" class="form-control" rows="20" ></textarea>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-2">
+                <label>Bubble Radius</label>
               </div>
-            </form>
-          </div>
-        </div>
-        <h3>Monitoring Interface</h3>
-        <div class="row">
-          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
-            <div class="togglebutton">
-              <label>
-                <input id="see-original" type="checkbox" checked> See Original
-              </label>
-            </div>
-          </div>
-          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
-            <div class="togglebutton">
-              <label>
-                <input id="see-bubbles" type="checkbox" checked> See Bubbles (
-                <span id="curr-bubbles">0</span>/<span id="total-bubbles">0</span>)
-              </label>
-            </div>
-          </div>
-          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-            <label> Timespan </label>
-            <div id="slider" style="margin-top:0px;" class="slider shor slider-material-orange"></div>
-
-          </div>
-
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div id="canvas-area" style="display:inline-block;float:left;">
-              <canvas id="result-canvas" width="500" height="500"></canvas>
-            </div>
-            <form style="display:inline-block;margin-left:20px;width:300px;">
-              <div class="form-group" style="margin-top:0px;">
-                <textarea id="result-desc" name="desc" class="form-control" rows="20" placeholder="You description will appear here..." disabled></textarea>
+              <div class="col-md-10">
+                <form name='radiusForm'>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="30" checked> 30
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="40"> 40
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="50"> 50
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="60"> 60
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="70"> 70
+                  </label>
+                </form>
               </div>
-            </form>
+            </div>
+            <div class="row">
+              <div class="col-md-2">
+                <label>Blur Radius</label>
+              </div>
+              <div class="col-md-10">
+                <form name='blurForm'>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="30" checked> 30
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="40"> 40
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="50"> 50
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="60"> 60
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="70"> 70
+                  </label>
+                </form>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <canvas id="canvas" width="500" height="500"></canvas>
+              </div>
+              <div class="col-md-4">
+                <form>
+                  <span class="badge"><span id="click-count">0</span> clicks</span>
+                  <span class="badge"><span id="char-count">0</span> characters</span>
+                  <div class="form-group label-floating" style="padding:0px;">
+                    <label for="desc" class="control-label">Describe the image in as much detail as possible...</label>
+                    <textarea id="desc" name="desc" class="form-control" rows="17"></textarea>
+                  </div>
+                </form>
+                <a href="#monitoring" class="btn btn-success btn-block" style="margin:0px;">
+                  Next
+                </a>
+              </div>
+            </div>
           </div>
         </div>
+        <div id="monitoring" class="panel panel-success" style="margin-top:100px;">
+          <div class="panel-heading">
+            <h3 class="panel-title">Monitoring Interface</h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+                <div class="togglebutton">
+                  <label>
+                    <input id="see-original" type="checkbox"> See Original
+                  </label>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+                <div class="togglebutton">
+                  <label>
+                    <input id="see-bubbles" type="checkbox" checked> See Bubbles (
+                    <span id="curr-bubbles">0</span>/<span id="total-bubbles">0</span>)
+                  </label>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <label> Timespan </label>
+                <div id="slider" style="margin-top:0px;" class="slider shor slider-material-orange"></div>
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <canvas id="result-canvas" width="500" height="500"></canvas>
+              </div>
+              <div class="col-md-4">
+                <label>Description Change:</label>
+                <p id="result-desc">
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="code" class="panel panel-default">
+      <div class="panel-body">
+        <h2>Code</h2>
+        <p>The source code used in this demo is available at <strong><a href="https://github.com/namwkim/bubbleview" target="_blank">github.com/namwkim/bubbleview</a></strong>.
+        It mainly consists of two components: 1) setting up a bubbleview interface on a HTML canvas and 2) displaying collected bubbles in temporal order.
+        A use case demonstrating how to use the code is shown in this webpage; please take a look at the source code of this page.<br><br>
+
+        At this moment, we do not publicly release the code used for running our experiments on Amazon's Mechanical Turk.
+        This code requires more complex development settings including a database, a web server, and scripts for automatically managing MTurk HITs. If you are interested in this code, please contact us.<p>
+
+      </div>
+    </div>
+    <div id="contact" class="panel panel-default">
+      <div class="panel-body">
+        <h2>Contact</h2>
+        <h4>Questions?</h4>
+        <p>Please send inquires to <a href="mailto:massvis@mit.edu">massvis@mit.edu</a></p>
+        <br>
+        <h4>Comments?</h4>
+        <div id="disqus_thread"></div>
       </div>
     </div>
   </div>
-
-
-
-
-
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -227,37 +259,43 @@
     function logClick(log) {
       clickCount++;
       $("#click-count").text(clickCount);
-      console.log(log);
+      // console.log(log);
       clicks.push(log);
 
       resetMonitoring();
     }
-    function logDescChange() {
-      console.log("out focus");
+
+    function focusInDesc() {
+      // console.log("in focus");
+      originalDesc = $("#desc").val();
+    }
+
+    function focusOutDesc() {
+      // console.log("out focus");
       updatedDesc = $("#desc").val();
       var diff = JsDiff.diffChars(originalDesc, updatedDesc);
-      console.log(diff);
       descs.push({
         diff: diff,
         timestamp: $.now()
       });
+      resetMonitoring();
+    }
 
-      resetMonitoring();
+    function onSliderChange(value, handle) {
+      updateMonitoring();
     }
-    function onSliderChange(value, handle){
-      console.log(value);
-      console.log(parseInt(handle));
-      resetMonitoring(parseInt(handle));
-    }
-    function onCheckSeeBubbles(){
+
+    function onCheckSeeBubbles() {
       seeBubbles = this.checked;
-      resetMonitoring();
+      updateMonitoring();
     }
-    function onCheckSeeOriginal(){
+
+    function onCheckSeeOriginal() {
       seeOriginal = this.checked;
-      resetMonitoring();
+      updateMonitoring();
     }
-    function resetBubbleView(){
+
+    function resetBubbleView() {
       //  reset bubbleview interface
       bv.setup('img/sample.png', 'canvas', radius, blur, logClick);
       $("#desc").val('');
@@ -266,12 +304,45 @@
       clicks = [];
       descs = [];
       resetMonitoring();
-
     }
-    function resetMonitoring(maxTime){
+
+    function updateMonitoring() {
+      // console.log('update monitoring')
+        //update bubbles
+      var filteredCnt = bv.monitor('img/sample.png', 'result-canvas', radius, blur,
+        seeBubbles, seeOriginal, clicks, parseInt($('#slider').val()));
+
+      //update description
+      var maxTime = parseInt($('#slider').val())
+      var desc = null; //$scope.desc;
+      for (var i = 0; i < descs.length; i++) {
+        var time = parseInt(descs[i].timestamp);
+        if (time <= maxTime) { // find the last description
+          desc = descs[i]
+        }
+      }
+      $('#result-desc').empty();
+      if (desc != null) {
+        desc['diff'].forEach(function(part) {
+          // green for additions, red for deletions
+          // grey for common parts
+          var color = part.added ? 'green' :
+            part.removed ? 'red' : 'grey';
+
+          var span = $("<span>" + part.value + "</span>");
+          span.css("color", color);
+          span.appendTo("#result-desc");
+
+        });
+      }
+      $("#curr-bubbles").text(filteredCnt);
+      $("#total-bubbles").text(clickCount);
+    }
+
+    function resetMonitoring(maxTime) {
       //  reset monitoring interface
       //  reset slider
-      if (clicks.length<=0){
+      if (clicks.length <= 0 && descs.length <= 0) {
         slider = $("#slider").noUiSlider({
           start: 0,
           connect: "lower",
@@ -280,25 +351,23 @@
             max: 0
           }
         }, true);
-        bv.monitor('img/sample.png', 'result-canvas', seeBubbles, seeOriginal);
-      }else{
-        var times = clicks.concat(descs).sort(function(a,b){
+      } else {
+        var times = clicks.concat(descs).sort(function(a, b) {
           return a.timestamp - b.timestamp;
-        }).map(function(d){
+        }).map(function(d) {
           return d.timestamp;
         });
 
         $("#slider").noUiSlider({
-          start: times[times.length-1],
+          start: times[times.length - 1],
           connect: "lower",
           range: {
-            min: times[0],
-            max: times[times.length-1]
+            min: times[0] - 1,
+            max: times[times.length - 1]
           }
         }, true);
-        bv.monitor('img/sample.png', 'result-canvas', seeBubbles, seeOriginal,
-          clicks, maxTime?maxTime:times[times.length-1]);
       }
+      updateMonitoring();
 
 
 
@@ -312,7 +381,7 @@
       blur = $("input[name='blur']:checked").val();
       seeBubbles = $("#see-bubbles").prop("checked");
       seeOriginal = $("#see-original").prop("checked");
-      console.log(seeBubbles + ", " + seeOriginal);
+      // console.log(seeBubbles + ", " + seeOriginal);
       $("#slider").noUiSlider({
         start: 0,
         connect: "lower",
@@ -325,15 +394,15 @@
 
 
       var radiBtns = document.radiusForm.radius;
-      for (var i=0; i<radiBtns.length; i++){
-        radiBtns[i].onclick=function(){
+      for (var i = 0; i < radiBtns.length; i++) {
+        radiBtns[i].onclick = function() {
           radius = parseInt(this.value);
           resetBubbleView();
         }
       }
       var blurBtns = document.blurForm.blur;
-      for (var i=0; i<blurBtns.length; i++){
-        blurBtns[i].onclick=function(){
+      for (var i = 0; i < blurBtns.length; i++) {
+        blurBtns[i].onclick = function() {
           blur = parseInt(this.value);
           resetBubbleView();
         }
@@ -343,22 +412,37 @@
         $('#char-count').text($('#desc').val().length);
       })
 
-      $("#desc").focusin(function() {
-        console.log("in focus");
-        originalDesc = $("#desc").val();
-      });
-      $("#desc").focusout(logDescChange);
+      $("#desc").focusin(focusInDesc);
+      $("#desc").focusout(focusOutDesc);
 
-      $("#slider").change(onSliderChange);
+      // $("#slider").change(onSliderChange);
+      $("#slider").on('slide', onSliderChange);
       $('#see-original').change(onCheckSeeOriginal);
       $('#see-bubbles').change(onCheckSeeBubbles);
 
-
-
-
     })
-
   </script>
+
+  <script>
+
+  /**
+  *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+  var disqus_config = function () {
+  this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+  this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+  };
+  */
+  (function() { // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = '//bubbleview.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
 </body>
 
 </html>

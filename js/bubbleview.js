@@ -113,15 +113,15 @@ var bv = (function() {
     }
     image.src = imgUrl;
   }
+
   // assume that the task was completed  at least within an hour.
-  function monitor(imgUrl, canvasID, seeBubbles, seeOriginal, clicks, maxTime) {
+  function monitor(imgUrl, canvasID, bubbleR, blurR, seeBubbles, seeOriginal,
+    clicks, maxTime) {
     var canvas = document.getElementById(canvasID); // not using global variable
     var image = new Image();
 
     var bubbles = [];
     if (clicks && clicks.length>0){
-      var bubbleR = clicks[0].radius;
-      var blurR = clicks[0].blur
       // filter bubbles by the time span
       clicks = clicks.slice();
       clicks.sort(function(a, b) { //sort time by descending
@@ -136,8 +136,8 @@ var bv = (function() {
         bubbles.push(click);
       }
     }
-    console.log('bubbles');
-    console.log(bubbles);
+    // console.log('bubbles');
+    // console.log(bubbles);
     image.onload = function() {
 
       var ctx = canvas.getContext('2d');
@@ -153,7 +153,7 @@ var bv = (function() {
       if (!seeBubbles || !clicks || clicks.length<=0) {
         return;
       }
-      console.log('draw bubbles');
+      // console.log('draw bubbles');
       // draw bubbles
       ctx.save();
       ctx.globalAlpha = 0.2;
