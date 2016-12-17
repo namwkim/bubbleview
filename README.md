@@ -1,2 +1,1 @@
-# bubbleview
-BubbleView: a generalizable methodology for crowdsourcing image importance
+# BubbleView: replacing eye-tracking to crowdsource image importance
