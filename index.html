@@ -222,6 +222,8 @@
     var descs = [];
     var originalDesc, updatedDesc;
     var slider;
+    var seeBubbles, seeOriginal;
+
     function logClick(log) {
       clickCount++;
       $("#click-count").text(clickCount);
@@ -244,8 +246,16 @@
     }
     function onSliderChange(value, handle){
       console.log(value);
-      console.log(handle);
-
+      console.log(parseInt(handle));
+      resetMonitoring(parseInt(handle));
+    }
+    function onCheckSeeBubbles(){
+      seeBubbles = this.checked;
+      resetMonitoring();
+    }
+    function onCheckSeeOriginal(){
+      seeOriginal = this.checked;
+      resetMonitoring();
     }
     function resetBubbleView(){
       //  reset bubbleview interface
@@ -258,17 +268,26 @@
       resetMonitoring();
 
     }
-    function resetMonitoring(){
+    function resetMonitoring(maxTime){
       //  reset monitoring interface
       //  reset slider
       if (clicks.length<=0){
-        // slider.noUiSlider.reset();
+        slider = $("#slider").noUiSlider({
+          start: 0,
+          connect: "lower",
+          range: {
+            min: 0,
+            max: 0
+          }
+        }, true);
+        bv.monitor('img/sample.png', 'result-canvas', seeBubbles, seeOriginal);
       }else{
         var times = clicks.concat(descs).sort(function(a,b){
           return a.timestamp - b.timestamp;
         }).map(function(d){
           return d.timestamp;
         });
+
         $("#slider").noUiSlider({
           start: times[times.length-1],
           connect: "lower",
@@ -276,8 +295,11 @@
             min: times[0],
             max: times[times.length-1]
           }
-        });
+        }, true);
+        bv.monitor('img/sample.png', 'result-canvas', seeBubbles, seeOriginal,
+          clicks, maxTime?maxTime:times[times.length-1]);
       }
+
 
 
     }
@@ -288,7 +310,20 @@
       // bubbleview interface setup
       radius = $("input[name='radius']:checked").val();
       blur = $("input[name='blur']:checked").val();
+      seeBubbles = $("#see-bubbles").prop("checked");
+      seeOriginal = $("#see-original").prop("checked");
+      console.log(seeBubbles + ", " + seeOriginal);
+      $("#slider").noUiSlider({
+        start: 0,
+        connect: "lower",
+        range: {
+          min: 0,
+          max: 0
+        }
+      });
       resetBubbleView();
+
+
       var radiBtns = document.radiusForm.radius;
       for (var i=0; i<radiBtns.length; i++){
         radiBtns[i].onclick=function(){
@@ -314,15 +349,9 @@
       });
       $("#desc").focusout(logDescChange);
 
-      slider = $("#slider").noUiSlider({
-        start: 20,
-        connect: "lower",
-        range: {
-          min: 0,
-          max: 20
-        }
-      });
-      $("#slider").noUiSlider.on('update', onSliderChange);
+      $("#slider").change(onSliderChange);
+      $('#see-original').change(onCheckSeeOriginal);
+      $('#see-bubbles').change(onCheckSeeBubbles);
 
 
 

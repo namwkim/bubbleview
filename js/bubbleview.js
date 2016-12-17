@@ -114,31 +114,30 @@ var bv = (function() {
     image.src = imgUrl;
   }
   // assume that the task was completed  at least within an hour.
-  function monitor(imgUrl, canvasID, clicks, seeBubbles, seeOriginal, maxTime) {
-    if (Array.isArray(clicks) == false || clicks.length <= 0) {
-      return;
-    }
+  function monitor(imgUrl, canvasID, seeBubbles, seeOriginal, clicks, maxTime) {
     var canvas = document.getElementById(canvasID); // not using global variable
     var image = new Image();
-    var bubbleR = clicks[0].radius;
-    var blurR = clicks[0].blur
-      // filter bubbles by the time span
-    var bubbles = [];
-    clicks = clicks.slice();
-    clicks.sort(function(a, b) { //sort time by descending
-      return a.timestamp - b.timestamp;
-    });
-    var date = new Date(parseInt(clickData[i].timestamp));
-    var minDate = new Date(parseInt(clicks[0].timestamp));
-    for (var i = 0; i < clicks.length; i++) {
-      var click = clicks[i];
-      var time = new Date(parseInt(clicks[i].timestamp) - minDate.getTime());
-      if (maxTime && maxTime < time.time()) {
-        break;
-      }
-      bubbles.push(click);
-    }
 
+    var bubbles = [];
+    if (clicks && clicks.length>0){
+      var bubbleR = clicks[0].radius;
+      var blurR = clicks[0].blur
+      // filter bubbles by the time span
+      clicks = clicks.slice();
+      clicks.sort(function(a, b) { //sort time by descending
+        return a.timestamp - b.timestamp;
+      });
+      for (var i = 0; i < clicks.length; i++) {
+        var click = clicks[i];
+        var time = new Date(parseInt(clicks[i].timestamp));
+        if (maxTime && maxTime < time.getTime()) {
+          break;
+        }
+        bubbles.push(click);
+      }
+    }
+    console.log('bubbles');
+    console.log(bubbles);
     image.onload = function() {
 
       var ctx = canvas.getContext('2d');
@@ -151,15 +150,17 @@ var bv = (function() {
       } else {
         StackBlur.image(image, newSize.width, newSize.height, canvas, blurR, true);
       }
-      if (!seeBubbles) {
+      if (!seeBubbles || !clicks || clicks.length<=0) {
         return;
       }
+      console.log('draw bubbles');
       // draw bubbles
       ctx.save();
       ctx.globalAlpha = 0.2;
       prev_x = null, prev_y = null;
       for (var i = 0; i < bubbles.length; i++) {
         var bubble = bubbles[i]
+        var time = new Date(parseInt(bubble.timestamp)- parseInt(bubbles[0].timestamp));
         ctx.beginPath();
         ctx.arc(bubble.cx, bubble.cy, bubble.radius, 0, 6.28, false);
         ctx.fillStyle = "red";
@@ -197,10 +198,12 @@ var bv = (function() {
       ctx.restore();
 
     }
-
+    image.src = imgUrl;
+    return bubbles.length;
 
   }
   return { // public interface
-    setup: setup
+    setup: setup,
+    monitor: monitor
   };
 })();
