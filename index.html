@@ -96,40 +96,58 @@
     <div id="demo" class="panel panel-default">
       <div class="panel-body">
         <h2>Live Demo</h2>
-        <h3>BubbleView Interface: Click and Describe the Image</h3>
-
+        <h3>BubbleView Interface</h3>
+        <p>Choose a parameter setting, and click & describe the image. You can check your result through the monitoring interface below in real time.</p>
 
         <div class="row">
           <div class="col-md-2">
-            <em>Bubble Radius</em>
+            <label>Bubble Radius</label>
           </div>
           <div class="col-md-10">
-
-            <label class="radio-inline">
-              <input type="radio" name="radius" id="radius30" value="30" checked=""> 30
-            </label>
-            <label class="radio-inline">
-              <input type="radio" name="radius" id="radius50" value="50"> 50
-            </label>
-            <label class="radio-inline">
-              <input type="radio" name="radius" id="radius70" value="70"> 70
-            </label>
+            <form name='radiusForm'>
+              <label class="radio-inline">
+                <input type="radio" name="radius" value="30" checked> 30
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="radius" value="40"> 40
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="radius" value="50"> 50
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="radius" value="60"> 60
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="radius" value="70"> 70
+              </label>
+            </form>
           </div>
+        </div>
+        <div class="row">
           <div class="col-md-2">
-            <em>Blur Radius</em>
+            <label>Blur Radius</label>
           </div>
           <div class="col-md-10">
-
-            <label class="radio-inline">
-              <input type="radio" name="blur" id="radius30" value="30" checked=""> 30
-            </label>
-            <label class="radio-inline">
-              <input type="radio" name="blur" id="radius50" value="50"> 50
-            </label>
-            <label class="radio-inline">
-              <input type="radio" name="blur" id="radius70" value="70"> 70
-            </label>
+            <form name='blurForm'>
+              <label class="radio-inline">
+                <input type="radio" name="blur" value="30" checked> 30
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="blur" value="40"> 40
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="blur" value="50"> 50
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="blur" value="60"> 60
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="blur" value="70"> 70
+              </label>
+            </form>
           </div>
+        </div>
+        <div class="row">
           <div class="col-md-12">
             <div id="canvas-area" style="display:inline-block;float:left;">
               <canvas id="canvas" width="500" height="500"></canvas>
@@ -137,8 +155,9 @@
             <form style="display:inline-block;margin-left:20px;width:300px;">
               <span class="badge"><span id="click-count">0</span> clicks</span>
               <span class="badge"><span id="char-count">0</span> characters</span>
-              <div class="form-group" style="margin-top:0px;">
-                <textarea id="desc" name="desc" class="form-control" rows="20" placeholder="Describe the image in as much detail as possible..."></textarea>
+              <div class="form-group label-floating">
+                <label for="desc" class="control-label">Describe the image in as much detail as possible...</label>
+                <textarea id="desc" name="desc" class="form-control" rows="20" ></textarea>
               </div>
             </form>
           </div>
@@ -197,59 +216,119 @@
   <script src="js/bubbleview.js"></script>
 
   <script>
-    function logging() {
+    var radius, blur;
+    var clickCount = 0;
+    var clicks = [];
+    var descs = [];
+    var originalDesc, updatedDesc;
+    var slider;
+    function logClick(log) {
+      clickCount++;
+      $("#click-count").text(clickCount);
+      console.log(log);
+      clicks.push(log);
+
+      resetMonitoring();
+    }
+    function logDescChange() {
+      console.log("out focus");
+      updatedDesc = $("#desc").val();
+      var diff = JsDiff.diffChars(originalDesc, updatedDesc);
+      console.log(diff);
+      descs.push({
+        diff: diff,
+        timestamp: $.now()
+      });
+
+      resetMonitoring();
+    }
+    function onSliderChange(value, handle){
+      console.log(value);
+      console.log(handle);
+
+    }
+    function resetBubbleView(){
+      //  reset bubbleview interface
+      bv.setup('img/sample.png', 'canvas', radius, blur, logClick);
+      $("#desc").val('');
+      $('#char-count').text(0);
+      $("#click-count").text(0);
+      clicks = [];
+      descs = [];
+      resetMonitoring();
+
+    }
+    function resetMonitoring(){
+      //  reset monitoring interface
+      //  reset slider
+      if (clicks.length<=0){
+        // slider.noUiSlider.reset();
+      }else{
+        var times = clicks.concat(descs).sort(function(a,b){
+          return a.timestamp - b.timestamp;
+        }).map(function(d){
+          return d.timestamp;
+        });
+        $("#slider").noUiSlider({
+          start: times[times.length-1],
+          connect: "lower",
+          range: {
+            min: times[0],
+            max: times[times.length-1]
+          }
+        });
+      }
+
 
     }
     $(document).ready(function() {
-      console.log(bv);
       $.material.init();
-      var clickCount = 0;
-      var imgUrl = 'img/sample.png';
-      var canvas = document.getElementById('canvas');
-      bv.setup(imgUrl, 'canvas', function(log) {
-        console.log(log);
-        clickCount++;
-        $("#click-count").text(clickCount);
-      })
 
-      $("#slider").noUiSlider({
-        start: 40,
-        connect: "lower",
-        range: {
-          min: 0,
-          max: 100
+
+      // bubbleview interface setup
+      radius = $("input[name='radius']:checked").val();
+      blur = $("input[name='blur']:checked").val();
+      resetBubbleView();
+      var radiBtns = document.radiusForm.radius;
+      for (var i=0; i<radiBtns.length; i++){
+        radiBtns[i].onclick=function(){
+          radius = parseInt(this.value);
+          resetBubbleView();
         }
-      });
-
-
+      }
+      var blurBtns = document.blurForm.blur;
+      for (var i=0; i<blurBtns.length; i++){
+        blurBtns[i].onclick=function(){
+          blur = parseInt(this.value);
+          resetBubbleView();
+        }
+      }
+      // description change tracking
       $('#desc').keyup(function() {
         $('#char-count').text($('#desc').val().length);
       })
 
-
       $("#desc").focusin(function() {
         console.log("in focus");
         originalDesc = $("#desc").val();
-        //$("#msg").text($("#textbox").val());
       });
+      $("#desc").focusout(logDescChange);
 
-      $("#desc").focusout(function() {
-        console.log("out focus");
-        updatedDesc = $("#desc").val();
-
-        var diff = JsDiff.diffChars(originalDesc, updatedDesc);
-        var data = {
-          is_practice: isPractice,
-          image: images.targets[curIdx],
-          desc_log: diff
+      slider = $("#slider").noUiSlider({
+        start: 20,
+        connect: "lower",
+        range: {
+          min: 0,
+          max: 20
         }
       });
+      $("#slider").noUiSlider.on('update', onSliderChange);
+
+
+
+
     })
 
-    var BUBBLE_RADIUS = 32;
-    var BLUR_SIGMA = 40;
-    var curImg = null;
-    var curBlurImg = null;
   </script>
 </body>
 
