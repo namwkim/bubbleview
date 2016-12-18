@@ -108,7 +108,7 @@ var bv = (function() {
       var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width, canvas.height);
       // image.style.width = newSize.width;
       // image.style.height = newSize.height;
-
+      console.log(newSize);
       StackBlur.image(image, newSize.width, newSize.height, canvas, _blurR, true);
     }
     image.src = imgUrl;

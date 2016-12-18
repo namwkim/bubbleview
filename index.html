@@ -115,7 +115,7 @@
         <a href="javascript:void(0)" class="btn btn-raised btn-default btn-sm">Bibtex</a>
         <br>
         <h4>Acknowledgement</h4>
-        <p>The authors would like to thank <a href="http://www.dgp.toronto.edu/~donovan/" target="_blank">Peter O’Donovan</a> for sharing his dataset and for helpful discussions, and Ming Jiang for answering questions about their data and methodology. The authors would also like to ac-knowledge <a href="http://www.dgp.toronto.edu/~hertzman/" target="_blank">Aaron Hertzmann</a>, <a href="http://bryanrussell.org/" target="_blank">Bryan Russell</a> and <a href="http://www.aviz.fr/~fekete/" target="_blank">Jean-Daniel Fekete</a> for helpful input. This work has been made possible through support from Google, Xerox, the Department of Defense through the National Defense Science & Engineering Graduate Fellowship (NDSEG) Program, the NSF Graduate Research Fellowship Program, the Natural Sciences and Engineering Research Council of Canada Postgraduate Doctoral Scholarship (NSERC PGS-D), and the Kwanjeong Educational Foundation. </p>
+        <p>This work has been made possible through support from Google, Xerox, the Department of Defense through the National Defense Science & Engineering Graduate Fellowship (NDSEG) Program, the NSF Graduate Research Fellowship Program, the Natural Sciences and Engineering Research Council of Canada Postgraduate Doctoral Scholarship (NSERC PGS-D), and the Kwanjeong Educational Foundation. </p>
 
       </div>
     </div>
@@ -181,7 +181,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-6" id="canvas-container">
                 <canvas id="canvas" width="500" height="500"></canvas>
               </div>
               <div class="col-md-4">
@@ -227,7 +227,7 @@
 
             </div>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-6" id="result-canvas-container">
                 <canvas id="result-canvas" width="500" height="500"></canvas>
               </div>
               <div class="col-md-4">
@@ -330,6 +330,7 @@
       $("#click-count").text(0);
       clicks = [];
       descs = [];
+      clickCount = 0;
       resetMonitoring();
     }
 
@@ -395,13 +396,37 @@
         }, true);
       }
       updateMonitoring();
-
-
-
     }
+    // responsive canvas
+    var size = {};
+    var canvasWidth = 500;
+    var canvasHeight = 500;
+    var windowWidth, windowHeight;
+    var timer = null;
+    function resizeCanvas(canvasID, containerID){
+      var newWidth = $('#'+containerID).width();
+      if (newWidth>500){
+        newWidth = 500;
+      }
+      var canvas = document.getElementById(canvasID);
+      canvas.width = parseInt(newWidth);
+      canvas.height = parseInt(newWidth);
+    }
+    function resized(){
+      resizeCanvas('canvas', 'canvas-container');
+      resizeCanvas('result-canvas', 'result-canvas-container');
+      resetBubbleView();
+    }
+    $( window ).resize(function() {
+      clearTimeout(timer);
+      timer = setTimeout(resized, 100);
+
+    });
     $(document).ready(function() {
       $.material.init();
 
+      resizeCanvas('canvas', 'canvas-container');
+      resizeCanvas('result-canvas', 'result-canvas-container');
 
       // bubbleview interface setup
       radius = $("input[name='radius']:checked").val();
