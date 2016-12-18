@@ -27,7 +27,7 @@ The `bubbleview.js` exports two functions `setup(...)` and `monitor(...)` whose 
 ```
 `bubbleR` (bubble radius) and `blurR` (blur radius) are defined in pixels. `task` is an optional user-defined callback and it will be called whenever a user clicks on canvas to generate a bubble; each bubble (center, radius, timestamp etc) will be passed as a parameter to the callback.
 
-`clicks` is an optional list of bubbles generated based on user clicks. `monitor()` expects its format to be the same as the one passed to the user callback; that is an item in the list should have `cx`, `cy` and `timestamp`. `maxTime` is an optional timestamp limiting the number of bubbles drawn on the canvas (see the time slider in the demo). `monitor()` returns the total number of bubbles drawn given the `maxTime` option.
+`clicks` is an optional list of bubbles generated based on user clicks. `monitor()` expects its format to be the same as the one passed to the user callback; that is, an item in the list should have `cx`, `cy` and `timestamp`. `maxTime` is an optional timestamp limiting the number of bubbles drawn on the canvas (see the time slider in the demo). `monitor()` returns the total number of bubbles drawn given the `maxTime` option.
 
 ## Code for Launching Experiments
 At this moment, we do not publicly release the code used for running our experiments on Amazon's Mechanical Turk. This code requires more complex development settings including a database, a web server, and scripts for automatically managing MTurk HITs. If you are interested in this code, please contact namwkim85@gmail.com.
