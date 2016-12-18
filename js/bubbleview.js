@@ -162,7 +162,7 @@ var bv = (function() {
         var bubble = bubbles[i]
         var time = new Date(parseInt(bubble.timestamp)- parseInt(bubbles[0].timestamp));
         ctx.beginPath();
-        ctx.arc(bubble.cx, bubble.cy, bubble.radius, 0, 6.28, false);
+        ctx.arc(bubble.cx, bubble.cy, bubbleR, 0, 6.28, false);
         ctx.fillStyle = "red";
         ctx.fill();
 
