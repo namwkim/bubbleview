@@ -32,10 +32,7 @@
 
   <link rel="stylesheet" type="text/css" href="css/ripples.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-material-design.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script src="js/ripples.min.js"></script>
-  <script src="js/material.min.js"></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -117,8 +114,7 @@
         </p>
 
         <a href="https://drive.google.com/file/d/0B4lNbruZjXtLdHdtc1Fhak1ibGs/view?usp=sharing" target="_blank" class="btn btn-raised btn-default btn-sm">PDF</a>
-        <button data-container="body" data-toggle="popover" data-placement="bottom" data-content="To be updated" class="btn btn-raised btn-default btn-sm">Bibtex</button>
-        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="" data-original-title="Tooltip on left">Left</button>
+        <a data-container="body" data-toggle="popover" data-placement="bottom" data-content="To be updated" class="btn btn-raised btn-default btn-sm">Bibtex</a>
 
         <br>
         <h4>Acknowledgement</h4>
@@ -272,7 +268,10 @@
     </div>
   </div>
 
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="js/ripples.min.js"></script>
+  <script src="js/material.min.js"></script>
   <script src="js/stackblur.js"></script>
   <script src="js/nouislider.min.js"></script>
   <script src="js/diff.min.js"></script>
@@ -429,6 +428,7 @@
     });
     $(document).ready(function() {
       $.material.init();
+      $('[data-toggle="popover"]').popover();
 
       resizeCanvas('canvas', 'canvas-container');
       resizeCanvas('result-canvas', 'result-canvas-container');
