@@ -2,12 +2,37 @@
 <html>
 
 <head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="BubbleView: replacing eye-tracking to crowdsource image importance">
+  <meta property="og:description" content="An alternative methodology for tracking human visual attention using mouse clicks.">
+  <meta property="og:image" content="https://namwkim.github.io/bubbleview/img/share.png">
+  <meta property="og:url" content="http://massvis.mit.edu/bubbleview">
+
+  <meta itemprop="name" content="BubbleView: replacing eye-tracking to crowdsource image importance">
+  <meta itemprop="description" content="An alternative methodology for tracking human visual attention using mouse clicks.">
+  <meta itemprop="image" content="https://namwkim.github.io/bubbleview/img/share.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@HarvardVCG">
+  <meta name="twitter:title" content="BubbleView: replacing eye-tracking to crowdsource image importance">
+  <meta name="twitter:description" content="An alternative methodology for tracking human visual attention using mouse clicks.">
+  <meta name="twitter:creator" content="@namwkim85">
+  <!-- Twitter summary card with large image must be at least 280x150px -->
+  <meta name="twitter:image:src" content="https://namwkim.github.io/bubbleview/img/share.png">
+
+  <meta name="author" content="Nam Wook Kim and Zoya Bylinskii">
+
   <title>BubbleView</title>
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="css/bootstrap-material-design.min.css">
+
   <link rel="stylesheet" type="text/css" href="css/ripples.min.css">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap-material-design.min.css">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -18,7 +43,8 @@
 </head>
 
 <body>
-  <div class="navbar navbar-info navbar-fixed-top">
+
+  <div class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -32,7 +58,8 @@
       </div>
       <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li class="active"><a href="#demo">Demo</a></li>
+
+          <li><a href="#demo">Demo</a></li>
           <li><a href="#code">Code</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
@@ -47,32 +74,33 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
-              <img class="img-circle img-responsive center-block" src="img/people/nam2.png"> NamWook
-              <br>Kim*
+
+              <img class="img-circle img-responsive center-block" src="img/people/nam2.png"> <a href="namwkim.org" target="_blank">NamWook
+              <br>Kim*</a>
             </div>
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
-              <img class="img-circle img-responsive center-block" src="img/people/zoya2.png"> Zoya
-              <br>Bylinskii*
+              <img class="img-circle img-responsive center-block" src="img/people/zoya2.png"> <a href="web.mit.edu/zoya/www/" target="_blank">Zoya
+              <br>Bylinskii*</a>
             </div>
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
-              <img class="img-circle img-responsive center-block" src="img/people/michelle2.png"> Michelle
-              <br>Borkin
+              <img class="img-circle img-responsive center-block" src="img/people/michelle2.png"> <a href="http://people.seas.harvard.edu/~borkin/" target="_blank">Michelle
+              <br>Borkin</a>
             </div>
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
-              <img class="img-circle img-responsive center-block" src="img/people/gajos2.png"> Krzysztof
-              <br>Gajos
+              <img class="img-circle img-responsive center-block" src="img/people/gajos2.png"> <a href="http://www.eecs.harvard.edu/~kgajos/" target="_blank">Krzysztof
+              <br>Gajos</a>
             </div>
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
-              <img class="img-circle img-responsive center-block" src="img/people/aude2.png"> Aude
-              <br>Oliva
+              <img class="img-circle img-responsive center-block" src="img/people/aude2.png"> <a href="http://cvcl.mit.edu/audeoliva.html" target="_blank">Aude
+              <br>Oliva</a>
             </div>
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
-              <img class="img-circle img-responsive center-block" src="img/people/fredo2.png"> Fredo
-              <br>Durand
+              <img class="img-circle img-responsive center-block" src="img/people/fredo2.png"> <a href="http://people.csail.mit.edu/fredo/" target="_blank">Fredo
+              <br>Durand</a>
             </div>
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
-              <img class="img-circle img-responsive center-block" src="img/people/hp2.png"> Hanspeter
-              <br>Pfister
+              <img class="img-circle img-responsive center-block" src="img/people/hp2.png"> <a href="http://vcg.seas.harvard.edu/people/hanspeter-pfister" target="_blank">Hanspeter
+              <br>Pfister</a>
             </div>
           </div>
         </div>
@@ -88,127 +116,164 @@
           Submitted to <em>ACM Transactions on Computer-Human Interaction (TOCHI)</em>
           <br> *Equal contribution
         </p>
-        <a href="https://drive.google.com/file/d/0B4lNbruZjXtLdHdtc1Fhak1ibGs/view?usp=sharing" class="btn btn-raised btn-default btn-sm">PDF</a>
-        <a href="javascript:void(0)" data-toggle="popover" data-placement="top" data-content="To be updated" class="btn btn-raised btn-default btn-sm">Bibtex</a>
+
+        <a href="https://drive.google.com/file/d/0B4lNbruZjXtLdTJfZldxOC1JN0k/view?usp=sharing" target="_blank" class="btn btn-raised btn-default btn-sm">PDF</a>
+        <a href="javascript:void(0)" class="btn btn-raised btn-default btn-sm">Bibtex</a>
         <br>
+        <h4>Acknowledgement</h4>
+        <p>This work has been made possible through support from Google, Xerox, the Department of Defense through the National Defense Science & Engineering Graduate Fellowship (NDSEG) Program, the NSF Graduate Research Fellowship Program, the Natural Sciences and Engineering Research Council of Canada Postgraduate Doctoral Scholarship (NSERC PGS-D), and the Kwanjeong Educational Foundation. </p>
+
       </div>
     </div>
     <div id="demo" class="panel panel-default">
       <div class="panel-body">
         <h2>Live Demo</h2>
-        <h3>BubbleView Interface</h3>
-        <p>Choose a parameter setting, and click & describe the image. You can check your result through the monitoring interface below in real time.</p>
-
-        <div class="row">
-          <div class="col-md-2">
-            <label>Bubble Radius</label>
+        <p>
+          1. Choose a parameter setting (bubble radius and blur radius)<br>
+          2. Click and describe the image in the BubbleView interface. <br>
+          3. Click 'Next' to see the bubbles generated in the monitoring interface. <br>
+        </p>
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">BubbleView Interface</h3>
           </div>
-          <div class="col-md-10">
-            <form name='radiusForm'>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="30" checked> 30
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="40"> 40
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="50"> 50
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="60"> 60
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="radius" value="70"> 70
-              </label>
-            </form>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-2">
-            <label>Blur Radius</label>
-          </div>
-          <div class="col-md-10">
-            <form name='blurForm'>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="30" checked> 30
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="40"> 40
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="50"> 50
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="60"> 60
-              </label>
-              <label class="radio-inline">
-                <input type="radio" name="blur" value="70"> 70
-              </label>
-            </form>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div id="canvas-area" style="display:inline-block;float:left;">
-              <canvas id="canvas" width="500" height="500"></canvas>
-            </div>
-            <form style="display:inline-block;margin-left:20px;width:300px;">
-              <span class="badge"><span id="click-count">0</span> clicks</span>
-              <span class="badge"><span id="char-count">0</span> characters</span>
-              <div class="form-group label-floating">
-                <label for="desc" class="control-label">Describe the image in as much detail as possible...</label>
-                <textarea id="desc" name="desc" class="form-control" rows="20" ></textarea>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-2">
+                <label>Bubble Radius</label>
               </div>
-            </form>
-          </div>
-        </div>
-        <h3>Monitoring Interface</h3>
-        <div class="row">
-          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
-            <div class="togglebutton">
-              <label>
-                <input id="see-original" type="checkbox" checked> See Original
-              </label>
-            </div>
-          </div>
-          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
-            <div class="togglebutton">
-              <label>
-                <input id="see-bubbles" type="checkbox" checked> See Bubbles (
-                <span id="curr-bubbles">0</span>/<span id="total-bubbles">0</span>)
-              </label>
-            </div>
-          </div>
-          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-            <label> Timespan </label>
-            <div id="slider" style="margin-top:0px;" class="slider shor slider-material-orange"></div>
-
-          </div>
-
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div id="canvas-area" style="display:inline-block;float:left;">
-              <canvas id="result-canvas" width="500" height="500"></canvas>
-            </div>
-            <form style="display:inline-block;margin-left:20px;width:300px;">
-              <div class="form-group" style="margin-top:0px;">
-                <textarea id="result-desc" name="desc" class="form-control" rows="20" placeholder="You description will appear here..." disabled></textarea>
+              <div class="col-md-10">
+                <form name='radiusForm'>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="30" checked> 30
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="40"> 40
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="50"> 50
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="60"> 60
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="radius" value="70"> 70
+                  </label>
+                </form>
               </div>
-            </form>
+            </div>
+            <div class="row">
+              <div class="col-md-2">
+                <label>Blur Radius</label>
+              </div>
+              <div class="col-md-10">
+                <form name='blurForm'>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="30" checked> 30
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="40"> 40
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="50"> 50
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="60"> 60
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="blur" value="70"> 70
+                  </label>
+                </form>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6" id="canvas-container">
+                <canvas id="canvas" width="500" height="500"></canvas>
+              </div>
+              <div class="col-md-4">
+                <form>
+                  <span class="badge"><span id="click-count">0</span> clicks</span>
+                  <span class="badge"><span id="char-count">0</span> characters</span>
+                  <div class="form-group label-floating" style="padding:0px;">
+                    <label for="desc" class="control-label">Describe the image in as much detail as possible...</label>
+                    <textarea id="desc" name="desc" class="form-control" rows="17"></textarea>
+                  </div>
+                </form>
+                <a href="#monitoring" class="btn btn-success btn-block" style="margin:0px;">
+                  Next
+                </a>
+              </div>
+            </div>
           </div>
         </div>
+        <div id="monitoring" class="panel panel-success" style="margin-top:100px;">
+          <div class="panel-heading">
+            <h3 class="panel-title">Monitoring Interface</h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+                <div class="togglebutton">
+                  <label>
+                    <input id="see-original" type="checkbox"> See Original
+                  </label>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
+                <div class="togglebutton">
+                  <label>
+                    <input id="see-bubbles" type="checkbox" checked> See Bubbles
+                  </label>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <label> Time Slider (<span id="curr-bubbles">0</span>/<span id="total-bubbles">0</span>)</label>
+                <div id="slider" style="margin-top:0px;" class="slider shor slider-material-orange"></div>
+              </div>
+
+            </div>
+            <div class="row">
+              <div class="col-md-6" id="result-canvas-container">
+                <canvas id="result-canvas" width="500" height="500"></canvas>
+              </div>
+              <div class="col-md-4">
+                <label>Description Change:</label>
+                <p id="result-desc">
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="code" class="panel panel-default">
+      <div class="panel-body">
+        <h2>Code</h2>
+        <p>The source code used in this demo is available at <strong><a href="https://github.com/namwkim/bubbleview" target="_blank">github.com/namwkim/bubbleview</a></strong>.
+        It mainly consists of two components: 1) setting up a bubbleview interface on a HTML canvas and 2) displaying collected bubbles in temporal order.
+        A use case demonstrating how to use the code is shown in this webpage; please take a look at the source code of this page.<br><br>
+
+        At this moment, we do not publicly release the code used for running our experiments on Amazon's Mechanical Turk.
+        This code requires more complex development settings including a database, a web server, and scripts for automatically managing MTurk HITs. If you are interested in this code, please contact <a href="mailto:namwkim85@gmail.com">namwkim85@gmail.com</a>.<p>
+
+      </div>
+    </div>
+    <div id="contact" class="panel panel-default">
+      <div class="panel-body">
+        <h2>Contact</h2>
+        <h4>Questions?</h4>
+        <p>Please send inquires to <a href="mailto:massvis@mit.edu">massvis@mit.edu</a></p>
+        <br>
+        <h4>Comments?</h4>
+        <div id="disqus_thread"></div>
       </div>
     </div>
   </div>
 
-
-
-
-
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="js/ripples.min.js"></script>
   <script src="js/material.min.js"></script>
   <script src="js/stackblur.js"></script>
   <script src="js/nouislider.min.js"></script>
@@ -222,19 +287,25 @@
     var descs = [];
     var originalDesc, updatedDesc;
     var slider;
+    var seeBubbles, seeOriginal;
+
     function logClick(log) {
       clickCount++;
       $("#click-count").text(clickCount);
-      console.log(log);
+      // console.log(log);
       clicks.push(log);
 
       resetMonitoring();
     }
-    function logDescChange() {
-      console.log("out focus");
+    function focusInDesc() {
+      // console.log("in focus");
+      originalDesc = $("#desc").val();
+    }
+
+    function focusOutDesc() {
+      // console.log("out focus");
       updatedDesc = $("#desc").val();
       var diff = JsDiff.diffChars(originalDesc, updatedDesc);
-      console.log(diff);
       descs.push({
         diff: diff,
         timestamp: $.now()
@@ -242,12 +313,22 @@
 
       resetMonitoring();
     }
-    function onSliderChange(value, handle){
-      console.log(value);
-      console.log(handle);
 
+    function onSliderChange(value, handle) {
+      updateMonitoring();
     }
-    function resetBubbleView(){
+
+    function onCheckSeeBubbles() {
+      seeBubbles = this.checked;
+      updateMonitoring();
+    }
+
+    function onCheckSeeOriginal() {
+      seeOriginal = this.checked;
+      updateMonitoring();
+    }
+
+    function resetBubbleView() {
       //  reset bubbleview interface
       bv.setup('img/sample.png', 'canvas', radius, blur, logClick);
       $("#desc").val('');
@@ -255,50 +336,134 @@
       $("#click-count").text(0);
       clicks = [];
       descs = [];
-      resetMonitoring();
 
+      clickCount = 0;
+      resetMonitoring();
     }
-    function resetMonitoring(){
-      //  reset monitoring interface
-      //  reset slider
-      if (clicks.length<=0){
-        // slider.noUiSlider.reset();
-      }else{
-        var times = clicks.concat(descs).sort(function(a,b){
-          return a.timestamp - b.timestamp;
-        }).map(function(d){
-          return d.timestamp;
-        });
-        $("#slider").noUiSlider({
-          start: times[times.length-1],
-          connect: "lower",
-          range: {
-            min: times[0],
-            max: times[times.length-1]
-          }
+
+    function updateMonitoring() {
+      // console.log('update monitoring')
+        //update bubbles
+      var filteredCnt = bv.monitor('img/sample.png', 'result-canvas', radius, blur,
+        seeBubbles, seeOriginal, clicks, parseInt($('#slider').val()));
+
+      //update description
+      var maxTime = parseInt($('#slider').val())
+      var desc = null; //$scope.desc;
+      for (var i = 0; i < descs.length; i++) {
+        var time = parseInt(descs[i].timestamp);
+        if (time <= maxTime) { // find the last description
+          desc = descs[i]
+        }
+      }
+      $('#result-desc').empty();
+      if (desc != null) {
+        desc['diff'].forEach(function(part) {
+          // green for additions, red for deletions
+          // grey for common parts
+          var color = part.added ? 'green' :
+            part.removed ? 'red' : 'grey';
+
+          var span = $("<span>" + part.value + "</span>");
+          span.css("color", color);
+          span.appendTo("#result-desc");
+
         });
       }
-
-
+      $("#curr-bubbles").text(filteredCnt);
+      $("#total-bubbles").text(clickCount);
     }
+
+    function resetMonitoring(maxTime) {
+      //  reset monitoring interface
+      //  reset slider
+      if (clicks.length <= 0 && descs.length <= 0) {
+        slider = $("#slider").noUiSlider({
+          start: 0,
+          connect: "lower",
+          range: {
+            min: 0,
+            max: 0
+          }
+        }, true);
+      } else {
+        var times = clicks.concat(descs).sort(function(a, b) {
+          return a.timestamp - b.timestamp;
+        }).map(function(d) {
+          return d.timestamp;
+        });
+
+        $("#slider").noUiSlider({
+          start: times[times.length - 1],
+          connect: "lower",
+          range: {
+            min: times[0] - 1,
+            max: times[times.length - 1]
+          }
+        }, true);
+      }
+      updateMonitoring();
+    }
+    // responsive canvas
+    var size = {};
+    var canvasWidth = 500;
+    var canvasHeight = 500;
+    var windowWidth, windowHeight;
+    var timer = null;
+    function resizeCanvas(canvasID, containerID){
+      var newWidth = $('#'+containerID).width();
+      if (newWidth>500){
+        newWidth = 500;
+      }
+      var canvas = document.getElementById(canvasID);
+      canvas.width = parseInt(newWidth);
+      canvas.height = parseInt(newWidth);
+    }
+    function resized(){
+      resizeCanvas('canvas', 'canvas-container');
+      resizeCanvas('result-canvas', 'result-canvas-container');
+      resetBubbleView();
+    }
+    $( window ).resize(function() {
+      clearTimeout(timer);
+      timer = setTimeout(resized, 100);
+
+    });
     $(document).ready(function() {
       $.material.init();
 
+      resizeCanvas('canvas', 'canvas-container');
+      resizeCanvas('result-canvas', 'result-canvas-container');
 
       // bubbleview interface setup
       radius = $("input[name='radius']:checked").val();
       blur = $("input[name='blur']:checked").val();
+
+      seeBubbles = $("#see-bubbles").prop("checked");
+      seeOriginal = $("#see-original").prop("checked");
+      // console.log(seeBubbles + ", " + seeOriginal);
+      $("#slider").noUiSlider({
+        start: 0,
+        connect: "lower",
+        range: {
+          min: 0,
+          max: 0
+        }
+      });
       resetBubbleView();
+
+
       var radiBtns = document.radiusForm.radius;
-      for (var i=0; i<radiBtns.length; i++){
-        radiBtns[i].onclick=function(){
+      for (var i = 0; i < radiBtns.length; i++) {
+        radiBtns[i].onclick = function() {
           radius = parseInt(this.value);
           resetBubbleView();
         }
       }
       var blurBtns = document.blurForm.blur;
-      for (var i=0; i<blurBtns.length; i++){
-        blurBtns[i].onclick=function(){
+
+      for (var i = 0; i < blurBtns.length; i++) {
+        blurBtns[i].onclick = function() {
           blur = parseInt(this.value);
           resetBubbleView();
         }
@@ -308,28 +473,38 @@
         $('#char-count').text($('#desc').val().length);
       })
 
-      $("#desc").focusin(function() {
-        console.log("in focus");
-        originalDesc = $("#desc").val();
-      });
-      $("#desc").focusout(logDescChange);
 
-      slider = $("#slider").noUiSlider({
-        start: 20,
-        connect: "lower",
-        range: {
-          min: 0,
-          max: 20
-        }
-      });
-      $("#slider").noUiSlider.on('update', onSliderChange);
+      $("#desc").focusin(focusInDesc);
+      $("#desc").focusout(focusOutDesc);
 
-
-
+      // $("#slider").change(onSliderChange);
+      $("#slider").on('slide', onSliderChange);
+      $('#see-original').change(onCheckSeeOriginal);
+      $('#see-bubbles').change(onCheckSeeBubbles);
 
     })
-
   </script>
+
+  <script>
+
+  /**
+  *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+  var disqus_config = function () {
+  this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+  this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+  };
+  */
+  (function() { // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = '//bubbleview.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
 </body>
 
 </html>
