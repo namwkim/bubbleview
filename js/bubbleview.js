@@ -108,43 +108,13 @@ var bv = (function() {
       var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width, canvas.height);
       // image.style.width = newSize.width;
       // image.style.height = newSize.height;
-<<<<<<< HEAD
 
-=======
       console.log(newSize);
->>>>>>> 180e81a0235c2ca8c56e0e3b6a233cf923b1e69d
       StackBlur.image(image, newSize.width, newSize.height, canvas, _blurR, true);
     }
     image.src = imgUrl;
   }
-<<<<<<< HEAD
-  // assume that the task was completed  at least within an hour.
-  function monitor(imgUrl, canvasID, clicks, seeBubbles, seeOriginal, maxTime) {
-    if (Array.isArray(clicks) == false || clicks.length <= 0) {
-      return;
-    }
-    var canvas = document.getElementById(canvasID); // not using global variable
-    var image = new Image();
-    var bubbleR = clicks[0].radius;
-    var blurR = clicks[0].blur
-      // filter bubbles by the time span
-    var bubbles = [];
-    clicks = clicks.slice();
-    clicks.sort(function(a, b) { //sort time by descending
-      return a.timestamp - b.timestamp;
-    });
-    var date = new Date(parseInt(clickData[i].timestamp));
-    var minDate = new Date(parseInt(clicks[0].timestamp));
-    for (var i = 0; i < clicks.length; i++) {
-      var click = clicks[i];
-      var time = new Date(parseInt(clicks[i].timestamp) - minDate.getTime());
-      if (maxTime && maxTime < time.time()) {
-        break;
-      }
-      bubbles.push(click);
-    }
 
-=======
 
   // assume that the task was completed  at least within an hour.
   function monitor(imgUrl, canvasID, bubbleR, blurR, seeBubbles, seeOriginal,
@@ -168,9 +138,6 @@ var bv = (function() {
         bubbles.push(click);
       }
     }
-    // console.log('bubbles');
-    // console.log(bubbles);
->>>>>>> 180e81a0235c2ca8c56e0e3b6a233cf923b1e69d
     image.onload = function() {
 
       var ctx = canvas.getContext('2d');
@@ -183,30 +150,21 @@ var bv = (function() {
       } else {
         StackBlur.image(image, newSize.width, newSize.height, canvas, blurR, true);
       }
-<<<<<<< HEAD
-      if (!seeBubbles) {
-        return;
-      }
-=======
+
       if (!seeBubbles || !clicks || clicks.length<=0) {
         return;
       }
       // console.log('draw bubbles');
->>>>>>> 180e81a0235c2ca8c56e0e3b6a233cf923b1e69d
       // draw bubbles
       ctx.save();
       ctx.globalAlpha = 0.2;
       prev_x = null, prev_y = null;
       for (var i = 0; i < bubbles.length; i++) {
         var bubble = bubbles[i]
-<<<<<<< HEAD
-        ctx.beginPath();
-        ctx.arc(bubble.cx, bubble.cy, bubble.radius, 0, 6.28, false);
-=======
+
         var time = new Date(parseInt(bubble.timestamp)- parseInt(bubbles[0].timestamp));
         ctx.beginPath();
         ctx.arc(bubble.cx, bubble.cy, bubbleR, 0, 6.28, false);
->>>>>>> 180e81a0235c2ca8c56e0e3b6a233cf923b1e69d
         ctx.fillStyle = "red";
         ctx.fill();
 
@@ -242,13 +200,7 @@ var bv = (function() {
       ctx.restore();
 
     }
-<<<<<<< HEAD
 
-
-  }
-  return { // public interface
-    setup: setup
-=======
     image.src = imgUrl;
     return bubbles.length;
 
@@ -256,6 +208,5 @@ var bv = (function() {
   return { // public interface
     setup: setup,
     monitor: monitor
->>>>>>> 180e81a0235c2ca8c56e0e3b6a233cf923b1e69d
   };
 })();
