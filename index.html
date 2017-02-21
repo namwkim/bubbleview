@@ -113,8 +113,8 @@
           <br> <strong>*Equal contribution</strong>
         </p>
 
-        <a href="file/paper.pdf" target="_blank" class="btn btn-raised btn-default btn-sm">PDF</a>
-        <a data-container="body" data-toggle="popover" data-placement="bottom" data-content="To be updated" class="btn btn-raised btn-default btn-sm">Bibtex</a>
+        <a href="https://arxiv.org/pdf/1702.05150.pdf" target="_blank" class="btn btn-raised btn-default btn-sm">PDF</a>
+        <a data-toggle="modal" data-target="#bibtex-dialog" class="btn btn-raised btn-default btn-sm">Bibtex</a>
 
         <br>
         <h4>Acknowledgement</h4>
@@ -267,7 +267,29 @@
       </div>
     </div>
   </div>
-
+  <div id="bibtex-dialog" class="modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Bibtex</h4>
+        </div>
+        <div class="modal-body">
+          <p>
+            @misc{1702.05150,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;Author = {Nam Wook Kim and Zoya Bylinskii and Michelle A. Borkin and Krzysztof Z. Gajos and Aude Oliva and Fredo Durand and Hanspeter Pfister},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;Title = {BubbleView: an alternative to eye-tracking for crowdsourcing image importance},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;Year = {2017},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;Eprint = {arXiv:1702.05150},<br>
+              }
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="js/ripples.min.js"></script>
