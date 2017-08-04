@@ -2,6 +2,7 @@
 <html>
 
 <head>
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,6 +29,7 @@
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
   <link rel="stylesheet" type="text/css" href="css/ripples.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-material-design.min.css">
 
@@ -41,6 +43,7 @@
 </head>
 
 <body>
+
   <div class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
@@ -55,6 +58,7 @@
       </div>
       <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav navbar-right">
+
           <li><a href="#demo">Demo</a></li>
           <li><a href="#code">Code</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -70,12 +74,13 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
-              <img class="img-circle img-responsive center-block" src="img/people/nam2.png"> <a href="namwkim.org" target="_blank">NamWook
-              <br>Kim*</a>
+
+              <img class="img-circle img-responsive center-block" src="img/people/nam2.png"> <a href="http://www.namwkim.org" target="_blank">NamWook
+              <br>Kim<strong>*</strong></a>
             </div>
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
-              <img class="img-circle img-responsive center-block" src="img/people/zoya2.png"> <a href="web.mit.edu/zoya/www/" target="_blank">Zoya
-              <br>Bylinskii*</a>
+              <img class="img-circle img-responsive center-block" src="img/people/zoya2.png"> <a href="http://web.mit.edu/zoya/www/" target="_blank">Zoya
+              <br>Bylinskii<strong>*</strong></a>
             </div>
             <div class="col-xs-4 col-sm-2 col-md-1 text-center">
               <img class="img-circle img-responsive center-block" src="img/people/michelle2.png"> <a href="http://people.seas.harvard.edu/~borkin/" target="_blank">Michelle
@@ -108,8 +113,10 @@
           Accepted to <em>ACM Transactions on Computer-Human Interaction (TOCHI)</em>
           <br> *Equal contribution
         </p>
-        <a href="https://drive.google.com/file/d/0B4lNbruZjXtLdTJfZldxOC1JN0k/view?usp=sharing" target="_blank" class="btn btn-raised btn-default btn-sm">PDF</a>
-        <a href="javascript:void(0)" class="btn btn-raised btn-default btn-sm">Bibtex</a>
+
+        <a href="https://arxiv.org/pdf/1702.05150.pdf" target="_blank" class="btn btn-raised btn-default btn-sm">PDF</a>
+        <a data-toggle="modal" data-target="#bibtex-dialog" class="btn btn-raised btn-default btn-sm">Bibtex</a>
+
         <br>
         <h4>Acknowledgement</h4>
         <p>This work has been made possible through support from Google, Xerox, the NSF Graduate Research Fellowship Program, the Natural Sciences and Engineering Research Council of Canada, and the Kwanjeong Educational Foundation. We also acknowledge the support of the Toyota Research Institute / MIT CSAIL Joint Research Center.</p>
@@ -261,13 +268,35 @@
       </div>
     </div>
   </div>
-
+  <div id="bibtex-dialog" class="modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Bibtex</h4>
+        </div>
+        <div class="modal-body">
+          <p>
+            @misc{1702.05150,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;Author = {Nam Wook Kim and Zoya Bylinskii and Michelle A. Borkin and Krzysztof Z. Gajos and Aude Oliva and Fredo Durand and Hanspeter Pfister},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;Title = {BubbleView: an alternative to eye-tracking for crowdsourcing image importance},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;Year = {2017},<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;Eprint = {arXiv:1702.05150},<br>
+              }
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="js/ripples.min.js"></script>
+  <script src="js/nouislider.min.js"></script>
   <script src="js/material.min.js"></script>
   <script src="js/stackblur.js"></script>
-  <script src="js/nouislider.min.js"></script>
   <script src="js/diff.min.js"></script>
   <script src="js/bubbleview.js"></script>
 
@@ -288,7 +317,6 @@
 
       resetMonitoring();
     }
-
     function focusInDesc() {
       // console.log("in focus");
       originalDesc = $("#desc").val();
@@ -302,6 +330,7 @@
         diff: diff,
         timestamp: $.now()
       });
+
       resetMonitoring();
     }
 
@@ -327,6 +356,7 @@
       $("#click-count").text(0);
       clicks = [];
       descs = [];
+
       clickCount = 0;
       resetMonitoring();
     }
@@ -421,6 +451,7 @@
     });
     $(document).ready(function() {
       $.material.init();
+      $('[data-toggle="popover"]').popover();
 
       resizeCanvas('canvas', 'canvas-container');
       resizeCanvas('result-canvas', 'result-canvas-container');
@@ -428,6 +459,7 @@
       // bubbleview interface setup
       radius = $("input[name='radius']:checked").val();
       blur = $("input[name='blur']:checked").val();
+
       seeBubbles = $("#see-bubbles").prop("checked");
       seeOriginal = $("#see-original").prop("checked");
       // console.log(seeBubbles + ", " + seeOriginal);
@@ -450,6 +482,7 @@
         }
       }
       var blurBtns = document.blurForm.blur;
+
       for (var i = 0; i < blurBtns.length; i++) {
         blurBtns[i].onclick = function() {
           blur = parseInt(this.value);
@@ -460,6 +493,7 @@
       $('#desc').keyup(function() {
         $('#char-count').text($('#desc').val().length);
       })
+
 
       $("#desc").focusin(focusInDesc);
       $("#desc").focusout(focusOutDesc);

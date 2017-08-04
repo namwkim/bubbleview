@@ -108,11 +108,13 @@ var bv = (function() {
       var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width, canvas.height);
       // image.style.width = newSize.width;
       // image.style.height = newSize.height;
+
       console.log(newSize);
       StackBlur.image(image, newSize.width, newSize.height, canvas, _blurR, true);
     }
     image.src = imgUrl;
   }
+
 
   // assume that the task was completed  at least within an hour.
   function monitor(imgUrl, canvasID, bubbleR, blurR, seeBubbles, seeOriginal,
@@ -136,8 +138,6 @@ var bv = (function() {
         bubbles.push(click);
       }
     }
-    // console.log('bubbles');
-    // console.log(bubbles);
     image.onload = function() {
 
       var ctx = canvas.getContext('2d');
@@ -150,6 +150,7 @@ var bv = (function() {
       } else {
         StackBlur.image(image, newSize.width, newSize.height, canvas, blurR, true);
       }
+
       if (!seeBubbles || !clicks || clicks.length<=0) {
         return;
       }
@@ -160,6 +161,7 @@ var bv = (function() {
       prev_x = null, prev_y = null;
       for (var i = 0; i < bubbles.length; i++) {
         var bubble = bubbles[i]
+
         var time = new Date(parseInt(bubble.timestamp)- parseInt(bubbles[0].timestamp));
         ctx.beginPath();
         ctx.arc(bubble.cx, bubble.cy, bubbleR, 0, 6.28, false);
@@ -198,6 +200,7 @@ var bv = (function() {
       ctx.restore();
 
     }
+
     image.src = imgUrl;
     return bubbles.length;
 

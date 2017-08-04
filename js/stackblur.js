@@ -103,6 +103,7 @@ function processImage(img, w, h, canvas, radius, blurAlphaChannel)
 
     var context = canvas.getContext('2d');
     context.clearRect(0, 0, w, h);
+
     context.drawImage(img, 0, 0, w, h);
 
     if (isNaN(radius) || radius < 1) return;
