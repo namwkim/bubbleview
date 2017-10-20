@@ -53,10 +53,12 @@ var bv = (function() {
     var x = e.clientX - rect.left;
     var y = e.clientY - rect.top;
 
-    console.log("x, y = " + x + ", " + y);
+    // console.log("x, y = " + x + ", " + y);
     //reset previous cicle
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     var newSize = CalcNewImageSize(image.naturalWidth, image.naturalHeight, canvas.width, canvas.height);
-    StackBlur.image(image, newSize.width, newSize.height, canvas, _blurR, true);
+    var blurred = blurImage(image, _blurR);
+    ctx.drawImage(blurred, 0, 0, newSize.width, newSize.height);
 
     //draw the circle
     ctx.beginPath();
@@ -84,7 +86,29 @@ var bv = (function() {
     }
 
   }
+  function blurImage(img, radius, blurAlphaChannel) {
+    var w = img.naturalWidth;
+    var h = img.naturalHeight;
 
+    var temp = document.createElement('canvas');
+    temp.width = img.naturalWidth;
+    temp.height = img.naturalHeight;
+    temp.style.width  = w + 'px';
+    temp.style.height = h + 'px';
+    var context = temp.getContext('2d');
+    context.clearRect(0, 0, w, h);
+
+    context.drawImage(img, 0, 0, w, h);
+
+    if (isNaN(radius) || radius < 1) return;
+
+    if (blurAlphaChannel)
+        StackBlur.canvasRGBA(temp, 0, 0, w, h, radius);
+    else
+        StackBlur.canvasRGB(temp, 0, 0, w, h, radius);
+
+      return temp;
+  }
   function setup(imgUrl, canvasID, bubbleR, blurR, task) {
     userTask = task;
     canvas = document.getElementById(canvasID);
@@ -106,11 +130,9 @@ var bv = (function() {
       var ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width, canvas.height);
-      // image.style.width = newSize.width;
-      // image.style.height = newSize.height;
 
-      console.log(newSize);
-      StackBlur.image(image, newSize.width, newSize.height, canvas, _blurR, true);
+      var blurred = blurImage(image, _blurR);
+      ctx.drawImage(blurred, 0, 0, newSize.width, newSize.height);
     }
     image.src = imgUrl;
   }
@@ -148,7 +170,8 @@ var bv = (function() {
       if (seeOriginal) {
         ctx.drawImage(image, 0, 0, newSize.width, newSize.height);
       } else {
-        StackBlur.image(image, newSize.width, newSize.height, canvas, blurR, true);
+        var blurred = blurImage(image, _blurR);
+        ctx.drawImage(blurred, 0, 0, newSize.width, newSize.height);
       }
 
       if (!seeBubbles || !clicks || clicks.length<=0) {
