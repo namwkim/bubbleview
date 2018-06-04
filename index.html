@@ -62,6 +62,7 @@
 
           <li><a href="#demo">Demo</a></li>
           <li><a href="#code">Code</a></li>
+          <li><a href="#data">Data</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
@@ -112,14 +113,15 @@ Our analyses validate the use of mouse-contingent, moving-window methodologies a
         </p>
         <br>
         <p>
-          Accepted to <em>ACM Transactions on Computer-Human Interaction (TOCHI)</em>
-          <br> *Equal contribution
+          <br> <strong>*Equal contribution</strong>
         </p>
 
-        <a href="https://vcg.seas.harvard.edu/publications/bubbleview-an-alternative-to-eye-tracking-for-crowdsourcing-image-importance/paper" target="_blank" class="btn btn-raised btn-default btn-sm">PDF</a>
-        <a href="https://vcg.seas.harvard.edu/publications/bubbleview-an-alternative-to-eye-tracking-for-crowdsourcing-image-importance/supplementary-material" target="_blank" class="btn btn-raised btn-default btn-sm">Supplement</a>
+        <a href="file/paper.pdf" target="_blank" class="btn btn-raised btn-default btn-sm">PDF</a>
+        <a href="file/supplement.pdf" target="_blank" class="btn btn-raised btn-default btn-sm">Supplement</a>
         <a href="file/slides.pdf" target="_blank" class="btn btn-raised btn-default btn-sm">Slides</a>
         <a data-toggle="modal" data-target="#bibtex-dialog" class="btn btn-raised btn-default btn-sm">Bibtex</a>
+        <a href="file/addendum.pdf" target="_blank" class="btn btn-raised btn-default btn-sm">Addendum</a>
+        
 
         <br>
         <h4>Acknowledgement</h4>
@@ -266,11 +268,20 @@ Our analyses validate the use of mouse-contingent, moving-window methodologies a
         It mainly consists of two components: 1) setting up a bubbleview interface on a HTML canvas and 2) displaying collected bubbles in temporal order.
         A use case demonstrating how to use the code is shown in this webpage; please take a look at the source code of this page.<br><br>
 
-        At this moment, we do not publicly release the code used for running our experiments on Amazon's Mechanical Turk.
-        This code requires more complex development settings including a database, a web server, and scripts for automatically managing MTurk HITs. If you are interested in this code, please contact <a href="mailto:namwkim85@gmail.com">namwkim85@gmail.com</a>.<p>
+        The code for running our experiments on Amazon's Mechanical Turk is outdated. We recommend taking a loot at the <a href="https://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_ExternalQuestionArticle.html" target="_blank">MTurk documentation</a>.
+        If you are interested in progammatically launching experiments, please refer to Amazon's SDK (e.g, <a href="https://aws.amazon.com/sdk-for-python/" target="_blank">Python</a>, <a href="https://aws.amazon.com/sdk-for-node-js/" target="_blank">Javascript</a>).  
+        
+        </p>
 
       </div>
     </div>
+    <div id="data" class="panel panel-default">
+        <div class="panel-body">
+          <h2>Data</h2>
+          <p>All the data and analysis codes used in BubbleView experiments are available at <strong><a href="https://github.com/cvzoya/bubbleview" target="_blank">github.com/cvzoya/bubbleview</a></strong>. You will find detailed information there.
+          </p>  
+        </div>
+      </div>
     <div id="contact" class="panel panel-default">
       <div class="panel-body">
         <h2>Contact</h2>
@@ -291,12 +302,23 @@ Our analyses validate the use of mouse-contingent, moving-window methodologies a
         </div>
         <div class="modal-body">
           <p>
-            @misc{1702.05150,<br>
+              @article{kim2017bubbleview,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;title={BubbleView: an interface for crowdsourcing image importance maps and tracking visual attention},<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;author={Kim, Nam Wook and Bylinskii, Zoya and Borkin, Michelle A and Gajos, Krzysztof Z and Oliva, Aude and Durand, Fredo and Pfister, Hanspeter},<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;journal={ACM Transactions on Computer-Human Interaction (TOCHI)},<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;volume={24},<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;number={5},<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;pages={36},<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;year={2017},<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;publisher={ACM}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;doi={10.1145/3131275}<br>
+              }
+            <!-- @misc{1702.05150,<br>
               &nbsp;&nbsp;&nbsp;&nbsp;Author = {Nam Wook Kim and Zoya Bylinskii and Michelle A. Borkin and Krzysztof Z. Gajos and Aude Oliva and Fredo Durand and Hanspeter Pfister},<br>
               &nbsp;&nbsp;&nbsp;&nbsp;Title = {BubbleView: an interface for crowdsourcing image importance maps and tracking visual attention},<br>
               &nbsp;&nbsp;&nbsp;&nbsp;Year = {2017},<br>
               &nbsp;&nbsp;&nbsp;&nbsp;Eprint = {arXiv:1702.05150},<br>
-              }
+              } -->
           </p>
         </div>
         <div class="modal-footer">
