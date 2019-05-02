@@ -1,3 +1,6 @@
+
+This repository is **deprecated**. The BubbleView code is now available here: [https://github.com/turkeyes/bubbleview](https://github.com/turkeyes/bubbleview).
+
 # BubbleView: replacing eye-tracking to crowdsource image importance
 
 Demo: http://massvis.mit.edu/bubbleview/
